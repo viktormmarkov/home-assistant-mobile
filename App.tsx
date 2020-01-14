@@ -9,19 +9,10 @@ class EntityList extends React.Component {
       error: ''
     };
   }
-  componentDidMount() {
-    fetch('http://192.168.100.28:3031/users').then(res => res.json(), err => {
-      this.setState({error: err.message});
-    })
-    .then(data => {
-      this.setState({data})
-    })
-  }
+
   render() {
-    const {data} = this.state;
     return (
       <View>
-        {data.map((d,i) => (<Text key={i}>{d.email}</Text>))}
         <Text>Nested Component</Text>
       </View>
     );
