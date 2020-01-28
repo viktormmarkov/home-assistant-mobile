@@ -12,8 +12,8 @@ export default class Login extends BaseScreen {
   }
   login = () => {
     const {email, password} = this.state;
-    const user = {email, password};
-    authenticationService.login(user)
+    const credentials = {email, password};
+    authenticationService.login(credentials)
       .then((res: any)=> {
         const {status} = res;
         if (status === 302 || status === 200) {
