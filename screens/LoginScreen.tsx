@@ -1,9 +1,8 @@
 import React from "react";
-import { StyleSheet, Text, View, TextInput, Button } from "react-native";
+import { StyleSheet, Text, View, TextInput, Button, AsyncStorage } from "react-native";
 import authenticationService from '../services/authenticationService';
-
-
-export default class Login extends React.Component {
+import BaseScreen from './BaseScreen';
+export default class Login extends BaseScreen {
   constructor(props) {
     super(props);
     this.state = {
@@ -15,7 +14,7 @@ export default class Login extends React.Component {
     const {email, password} = this.state;
     const user = {email, password};
     authenticationService.login(user)
-      .then(res => {
+      .then((res: any)=> {
         const {status} = res;
         if (status === 302 || status === 200) {
           console.log('SUCCESS')
