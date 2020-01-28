@@ -35,7 +35,7 @@ export default class Login extends React.Component {
         <Text>Login</Text>
         <TextInput
           style={{ height: 40 }}
-          placeholder="Type here to translate!"
+          placeholder="Email"
           onChangeText={email => this.setState({ email })}
           value={this.state.email}
           autoCompleteType='email'
@@ -43,7 +43,7 @@ export default class Login extends React.Component {
         />
         <TextInput
           style={{ height: 40 }}
-          placeholder="Type here to translate!"
+          placeholder="Password"
           onChangeText={password => this.setState({ password })}
           value={this.state.password}
           autoCompleteType='password'
