@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import { StyleSheet, View, ScrollView, Button, Text, AsyncStorage } from 'react-native';
 import BaseScreen from './BaseScreen';
-import { SearchBar, ListItem, Divider } from 'react-native-elements';
+import { SearchBar, ListItem, Divider, Header } from 'react-native-elements';
 import productsService from '../services/productsService';
 import shoppingListService from '../services/shoppingListService';
 
@@ -54,6 +54,7 @@ export default class HomeScreen extends BaseScreen {
 
   getShoppingCartItems = () => {
     return this.state.shoppingListItems
+      .sort((a: any, b: any) => a.id - b.id)
       .map((p: any, i) => (<ListItem
         key={i}
         title={p.name}
