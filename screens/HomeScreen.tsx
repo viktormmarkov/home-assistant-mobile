@@ -1,39 +1,96 @@
 import React from 'react';
-import { StyleSheet, View, Button, AsyncStorage } from 'react-native';
+import _ from 'lodash';
+import { StyleSheet, View, ScrollView, Button, Text, AsyncStorage } from 'react-native';
 import BaseScreen from './BaseScreen';
-import { SearchBar } from 'react-native-elements';
+import { SearchBar, ListItem, Divider } from 'react-native-elements';
+import productsService from '../services/productsService';
+import shoppingListService from '../services/shoppingListService';
 
-
+function filterProducts(i, search) {
+  return i.name.toLowerCase().indexOf(search.toLowerCase()) > -1;
+}
 export default class HomeScreen extends BaseScreen {
-  state: { search: string; };
+
+  state: { search: string; products: []; shoppingListItems: [] };
   constructor(props) {
     super(props);
     this.state = {
       search: "",
+      products: [],
+      shoppingListItems: []
     };
   }
 
   componentDidMount() {
-    // get shoppinglist
-    // get shoppinglist items
-    // get products
+    this.loadProducts();
+    this.loadShoppingCartItems();
   }
-  updateSearch = (v) => {
-    this.setState({search: v});
-    console.log(v);
+  loadProducts = () => {
+    productsService.query().then(({ data }) => {
+      this.setState({ products: data })
+    })
+  }
+  loadShoppingCartItems = () => {
+    shoppingListService.query().then(({ data }) => {
+      this.setState({ shoppingListItems: data })
+    })
+  }
+  updateSearch = (text) => {
+    this.setState({ search: text });
   };
 
-  render () {
-    const {navigate} = this.props.navigation;
-    const {search} = this.state;
+  getProducts = () => {
+    return this.state.products
+      .filter(i => filterProducts(i, this.state.search))
+      .filter((i: any) => !this.state.shoppingListItems.find((li: any) => li.id === i.id))
+      .sort((a: any, b: any) => a.id - b.id)
+      .map((p: any, i) => (<ListItem
+        key={i}
+        title={p.name}
+        bottomDivider
+        onPress={() => this.addToShoppingList(p)}
+      />))
+  }
+
+  getShoppingCartItems = () => {
+    return this.state.shoppingListItems
+      .map((p: any, i) => (<ListItem
+        key={i}
+        title={p.name}
+        bottomDivider
+        onPress={() => this.removeFromShoppingList(p)}
+      />))
+  }
+
+  addToShoppingList = (item) => {
+    this.setState({shoppingListItems: [...this.state.shoppingListItems, item]})
+  }
+
+  removeFromShoppingList = (item) => {
+    this.setState({shoppingListItems: _.reject(this.state.shoppingListItems, (li: any) => li.id === item.id)})
+  }
+
+  render() {
+    const { navigate } = this.props.navigation;
+    const { search, products = [] } = this.state;
+
+    console.log(products);
     return (
-      <View style={styles.container}>
+      <React.Fragment>
         <SearchBar style={styles.searchbar}
           placeholder="Type Here..."
           onChangeText={this.updateSearch}
           lightTheme
-          value={search}>  
+          value={search}>
         </SearchBar>
+        <ScrollView>
+          <Text>Shopping Items</Text>
+          <Divider></Divider>
+          {this.getShoppingCartItems()}
+          <Divider></Divider>
+          <Text>Products</Text>
+          {this.getProducts()}
+        </ScrollView>
         <Button
           color='red'
           title="Sign Out"
@@ -42,7 +99,7 @@ export default class HomeScreen extends BaseScreen {
             navigate('AuthLoading')
           }}
         />
-      </View>
+      </React.Fragment>
     );
   }
 }

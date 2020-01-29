@@ -4,8 +4,14 @@ import { createStackNavigator } from 'react-navigation-stack';
 import HomeScreen from "./screens/HomeScreen";
 import LoginScreen from "./screens/LoginScreen";
 import AuthLoadingScreen from "./screens/AuthLoadingScreen";
+const HIDDEN_HEADER_OPTIONS = {
+  headerMode: 'none',
+  navigationOptions: {
+    headerVisible: false,
+  }
+};
 
-const AuthStack = createStackNavigator({ LoginScreen: LoginScreen });
+const AuthStack = createStackNavigator({ LoginScreen: LoginScreen }, {...HIDDEN_HEADER_OPTIONS});
 const AppStack = createStackNavigator({ Home: HomeScreen });
 
 const MainNavigator = createSwitchNavigator(
