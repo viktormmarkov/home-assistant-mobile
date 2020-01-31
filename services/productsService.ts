@@ -21,7 +21,7 @@ class ProductsService extends ServiceBase {
     }
 
     query() {
-        return super.query().then(() => {}, () => mockData(MOCK));
+        return super.query()//.then(() => {}, () => mockData(MOCK));
     }
 }
 

@@ -1,10 +1,11 @@
 import React from 'react';
 import _ from 'lodash';
-import { StyleSheet, View, ScrollView, Button, Text, AsyncStorage } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, AsyncStorage } from 'react-native';
 import BaseScreen from './BaseScreen';
 import { SearchBar, ListItem, Divider, Header } from 'react-native-elements';
 import productsService from '../services/productsService';
 import shoppingListService from '../services/shoppingListService';
+import {SafeAreaView} from 'react-navigation'
 
 function filterProducts(i, search) {
   return i.name.toLowerCase().indexOf(search.toLowerCase()) > -1;
@@ -26,7 +27,7 @@ export default class HomeScreen extends BaseScreen {
     this.loadShoppingCartItems();
   }
   loadProducts = () => {
-    productsService.query().then(({ data }) => {
+    productsService.query().then((data) => {
       this.setState({ products: data })
     })
   }
@@ -40,11 +41,12 @@ export default class HomeScreen extends BaseScreen {
   };
 
   getProducts = () => {
-    return this.state.products
+    const products = _(this.state.products)
       .filter(i => filterProducts(i, this.state.search))
-      .filter((i: any) => !this.state.shoppingListItems.find((li: any) => li.id === i.id))
-      .sort((a: any, b: any) => a.id - b.id)
-      .map((p: any, i) => (<ListItem
+      .reject((i: any) => this.state.shoppingListItems.find((li: any) => li._id === i._id))
+      .sortBy('_id')
+      .value();
+    return products.map((p: any, i) => (<ListItem
         key={i}
         title={p.name}
         bottomDivider
@@ -54,6 +56,7 @@ export default class HomeScreen extends BaseScreen {
 
   getShoppingCartItems = () => {
     return this.state.shoppingListItems
+      .filter(i => filterProducts(i, this.state.search))
       .sort((a: any, b: any) => a.id - b.id)
       .map((p: any, i) => (<ListItem
         key={i}
@@ -68,16 +71,15 @@ export default class HomeScreen extends BaseScreen {
   }
 
   removeFromShoppingList = (item) => {
-    this.setState({shoppingListItems: _.reject(this.state.shoppingListItems, (li: any) => li.id === item.id)})
+    this.setState({shoppingListItems: _.reject(this.state.shoppingListItems, (li: any) => li._id === item._id)})
   }
 
   render() {
     const { navigate } = this.props.navigation;
     const { search, products = [] } = this.state;
 
-    console.log(products);
     return (
-      <React.Fragment>
+      <SafeAreaView style={styles.container}>
         <SearchBar style={styles.searchbar}
           placeholder="Type Here..."
           onChangeText={this.updateSearch}
@@ -92,15 +94,7 @@ export default class HomeScreen extends BaseScreen {
           <Text>Products</Text>
           {this.getProducts()}
         </ScrollView>
-        <Button
-          color='red'
-          title="Sign Out"
-          onPress={async () => {
-            await AsyncStorage.removeItem('userToken');
-            navigate('AuthLoading')
-          }}
-        />
-      </React.Fragment>
+      </SafeAreaView>
     );
   }
 }

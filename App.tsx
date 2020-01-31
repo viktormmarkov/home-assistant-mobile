@@ -3,6 +3,8 @@ import { createStackNavigator } from 'react-navigation-stack';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 
 import HomeScreen from "./screens/HomeScreen";
+import PromotionsScreen from "./screens/PromotionsScreen";
+import SettingsScreen from "./screens/SettingsScreen";
 import LoginScreen from "./screens/LoginScreen";
 import AuthLoadingScreen from "./screens/AuthLoadingScreen";
 const HIDDEN_HEADER_OPTIONS = {
@@ -13,7 +15,7 @@ const HIDDEN_HEADER_OPTIONS = {
 };
 
 const AuthStack = createStackNavigator({ LoginScreen: LoginScreen }, {...HIDDEN_HEADER_OPTIONS});
-const AppStack = createBottomTabNavigator({ Home: HomeScreen, Promotions: HomeScreen, Settings: HomeScreen });
+const AppStack = createBottomTabNavigator({ Home: HomeScreen, Promotions: PromotionsScreen, Settings: SettingsScreen}, {});
 
 const MainNavigator = createSwitchNavigator(
   {
