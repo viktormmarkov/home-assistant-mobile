@@ -2,7 +2,7 @@ import apiBase from './apiBase';
 import {success} from './serverMocks';
 class AuthenticationService {
     login(credentials) {
-        return apiBase.post('/login', credentials).then(()=>{}, () => success());
+        return apiBase.post('/login', credentials);
     }
     logout(){
         return apiBase.get('/logout');

@@ -1,16 +1,17 @@
 import React from "react";
-import { StyleSheet, View, AsyncStorage } from "react-native";
+import { StyleSheet, View, AsyncStorage, Text } from "react-native";
 import authenticationService from '../services/authenticationService';
 import BaseScreen from './BaseScreen';
 import { Input, Button } from 'react-native-elements';
 
 export default class Login extends BaseScreen {
-  state: { email: string; password: string; };
+  state: { email: string; password: string; errorMessage: string };
   constructor(props) {
     super(props);
     this.state = {
       email: "",
-      password: ""
+      password: "",
+      errorMessage: ""
     };
   }
   login = async () => {
@@ -19,24 +20,26 @@ export default class Login extends BaseScreen {
     const credentials = {email, password};
     authenticationService.login(credentials)
       .then(async (res: any) => {
-        const {status} = res;
-        if (status === 302 || status === 200) {
-          await AsyncStorage.setItem('userToken', 'success');
+        if (res._id) {
+          await AsyncStorage.setItem('userToken', res.data._id);
           navigate('AuthLoading')
-
         } else {
-          const error = new Error(res.error);
-          throw error;
+          this.setState({
+            errorMessage: 'Something went wrong'
+          })
         }
       }) 
       .catch(err => {
-        console.log('err:', err);
+        this.setState({
+          errorMessage: err.response.data.message
+        });
       }) 
   }
 
   render() {
     return (
       <View style={styles.container}>
+        <Text>{this.state.errorMessage}</Text>
         <Input
           style={{ height: 40 }}
           placeholder="email@address.com"

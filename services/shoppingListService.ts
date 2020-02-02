@@ -27,10 +27,6 @@ class ShoppingListService extends ServiceBase {
     constructor() {
         super('shoppingLists');
     }
-
-    query() {
-        return super.query().then(() => {}, () => mockData([]));
-    }
 }
 
 export default new ShoppingListService();

@@ -32,8 +32,8 @@ export default class HomeScreen extends BaseScreen {
     })
   }
   loadShoppingCartItems = () => {
-    shoppingListService.query().then(({ data }) => {
-      this.setState({ shoppingListItems: data })
+    shoppingListService.query().then((data) => {
+      this.setState({ shoppingListItems: data || [] })
     })
   }
   updateSearch = (text) => {
