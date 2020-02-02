@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import { StyleSheet, View, ScrollView, Button, Text, AsyncStorage } from 'react-native';
+import { StyleSheet,  SafeAreaView } from 'react-native';
 import BaseScreen from './BaseScreen';
 import { SearchBar, ListItem, Header } from 'react-native-elements';
 import promotionsService from '../services/promotionsService';
@@ -45,15 +45,14 @@ export default class PromotionsScreen extends BaseScreen {
   render() {
     const {search} = this.state;
     return (
-      <View>
-        <Header></Header>
+      <SafeAreaView>
         <SearchBar style={styles.searchbar}
           placeholder="Type Here..."
           onChangeText={this.updateSearch}
           lightTheme
           value={search}></SearchBar>
         {this.getPromotions()}
-      </View>
+      </SafeAreaView>
     );
   }
 }
