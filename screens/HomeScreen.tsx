@@ -1,39 +1,54 @@
 import React from 'react';
 import _ from 'lodash';
 import { StyleSheet, View, ScrollView, Text, AsyncStorage } from 'react-native';
-import BaseScreen from './BaseScreen';
 import { SearchBar, ListItem, Divider, Header } from 'react-native-elements';
+import {SafeAreaView} from 'react-navigation'
+import BaseScreen from './BaseScreen';
+
 import productsService from '../services/productsService';
 import shoppingListService from '../services/shoppingListService';
-import {SafeAreaView} from 'react-navigation'
+
+import AppStore from '../store/AppStore';
 
 function filterProducts(i, search) {
   return i.name.toLowerCase().indexOf(search.toLowerCase()) > -1;
 }
 export default class HomeScreen extends BaseScreen {
 
-  state: { search: string; products: []; shoppingListItems: [] };
+  state: { search: string; products: []; shoppingListItems: [], shoppingListId: string};
   constructor(props) {
     super(props);
     this.state = {
       search: "",
       products: [],
-      shoppingListItems: []
+      shoppingListItems: [],
+      shoppingListId: ""
     };
   }
-
   componentDidMount() {
     this.loadProducts();
     this.loadShoppingCartItems();
+    this.testAsyncStorage();
   }
   loadProducts = () => {
     productsService.query().then((data) => {
       this.setState({ products: data })
     })
   }
-  loadShoppingCartItems = () => {
-    shoppingListService.query().then((data) => {
-      this.setState({ shoppingListItems: data || [] })
+  loadShoppingCartItems = async () => {
+    const shoppingList = AppStore.safeGet('shoppingList', {});
+    if (shoppingList._id) {
+      const {data: items} = await shoppingListService.getShoppingItems(shoppingList._id);
+      this.setState({ shoppingListItems: items })
+    } else {
+      this.setState({ shoppingListItems: [] })
+    }
+    
+  }
+  testAsyncStorage = async () => {
+    const shoppingListId = await AsyncStorage.getItem('shoppingListId');
+    this.setState({
+      shoppingListId
     })
   }
   updateSearch = (text) => {
@@ -75,8 +90,7 @@ export default class HomeScreen extends BaseScreen {
   }
 
   render() {
-    const { navigate } = this.props.navigation;
-    const { search, products = [] } = this.state;
+    const { search } = this.state;
 
     return (
       <SafeAreaView style={styles.container}>
@@ -87,7 +101,9 @@ export default class HomeScreen extends BaseScreen {
           value={search}>
         </SearchBar>
         <ScrollView>
-          <Text>Shopping Items</Text>
+          <Text>AppStore: {AppStore.safeGet('shoppingList', {})._id}</Text>
+          <Text>AsyncStore: {this.state.shoppingListId}</Text>
+
           <Divider></Divider>
           {this.getShoppingCartItems()}
           <Divider></Divider>

@@ -1,8 +1,11 @@
 import React from "react";
 import { StyleSheet, View, AsyncStorage, Text } from "react-native";
-import authenticationService from '../services/authenticationService';
-import BaseScreen from './BaseScreen';
 import { Input, Button } from 'react-native-elements';
+import BaseScreen from './BaseScreen';
+
+import authenticationService from '../services/authenticationService';
+import shoppingListService from '../services/shoppingListService';
+import AppStore from '../store/AppStore';
 
 export default class Login extends BaseScreen {
   state: { email: string; password: string; errorMessage: string };
@@ -19,9 +22,13 @@ export default class Login extends BaseScreen {
     const {navigate} = this.props.navigation;
     const credentials = {email, password};
     authenticationService.login(credentials)
-      .then(async (res: any) => {
-        if (res._id) {
-          await AsyncStorage.setItem('userToken', res.data._id);
+      .then(async ({data}) => {
+        if (data && data._id) {
+          await AsyncStorage.setItem('userToken', data._id);
+          const shoppingLists = await shoppingListService.query();
+          const activeShoppingList = shoppingLists[0];
+          await AsyncStorage.setItem('shoppingListId', activeShoppingList._id);
+          AppStore.set('shoppingList', activeShoppingList);
           navigate('AuthLoading')
         } else {
           this.setState({
@@ -48,6 +55,7 @@ export default class Login extends BaseScreen {
           autoCompleteType='email'
           keyboardType='email-address'
           label="Email"
+          autoCapitalize='none'
         />
         <Input
           style={{ height: 40 }}

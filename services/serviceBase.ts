@@ -1,8 +1,8 @@
 import apiBase from './apiBase';
 
 class ServiceBase {
-    private entity: String;
-    private api: any;
+    protected entity: String;
+    protected api: any;
 
     constructor(entity) {
         this.entity = entity;
