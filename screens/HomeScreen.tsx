@@ -13,6 +13,7 @@ import AppStore from '../store/AppStore';
 function filterProducts(i, search) {
   return i.name.toLowerCase().indexOf(search.toLowerCase()) > -1;
 }
+
 export default class HomeScreen extends BaseScreen {
 
   state: { search: string; products: []; shoppingListItems: [], shoppingListId: string};
@@ -26,9 +27,14 @@ export default class HomeScreen extends BaseScreen {
     };
   }
   componentDidMount() {
+    this.loadInitialData();
+  }
+  loadInitialData = async () => {
+    const shoppingLists = await shoppingListService.query();
+    const activeShoppingList = shoppingLists[0];
+    AppStore.set('shoppingList', activeShoppingList);
     this.loadProducts();
     this.loadShoppingCartItems();
-    this.testAsyncStorage();
   }
   loadProducts = () => {
     productsService.query().then((data) => {
@@ -45,12 +51,6 @@ export default class HomeScreen extends BaseScreen {
     }
     
   }
-  testAsyncStorage = async () => {
-    const shoppingListId = await AsyncStorage.getItem('shoppingListId');
-    this.setState({
-      shoppingListId
-    })
-  }
   updateSearch = (text) => {
     this.setState({ search: text });
   };
@@ -58,7 +58,7 @@ export default class HomeScreen extends BaseScreen {
   getProducts = () => {
     const products = _(this.state.products)
       .filter(i => filterProducts(i, this.state.search))
-      .reject((i: any) => this.state.shoppingListItems.find((li: any) => li._id === i._id))
+      .reject((i: any) => this.state.shoppingListItems.find((li: any) => li.product === i._id))
       .sortBy('_id')
       .value();
     return products.map((p: any, i) => (<ListItem
@@ -82,11 +82,17 @@ export default class HomeScreen extends BaseScreen {
   }
 
   addToShoppingList = (item) => {
-    this.setState({shoppingListItems: [...this.state.shoppingListItems, item]})
+    const shoppingList = AppStore.safeGet('shoppingList', {});
+    shoppingListService.addProduct(shoppingList._id, item)
+      .then(() => {
+        this.loadShoppingCartItems()
+      });
   }
 
   removeFromShoppingList = (item) => {
-    this.setState({shoppingListItems: _.reject(this.state.shoppingListItems, (li: any) => li._id === item._id)})
+    const shoppingList = AppStore.safeGet('shoppingList', {});
+    shoppingListService.removeItem(shoppingList._id, item._id)
+      .then(this.loadShoppingCartItems);
   }
 
   render() {
@@ -101,9 +107,6 @@ export default class HomeScreen extends BaseScreen {
           value={search}>
         </SearchBar>
         <ScrollView>
-          <Text>AppStore: {AppStore.safeGet('shoppingList', {})._id}</Text>
-          <Text>AsyncStore: {this.state.shoppingListId}</Text>
-
           <Divider></Divider>
           {this.getShoppingCartItems()}
           <Divider></Divider>
