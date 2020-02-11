@@ -12,8 +12,8 @@ export default class Login extends BaseScreen {
   constructor(props) {
     super(props);
     this.state = {
-      email: "",
-      password: "",
+      email: "test@email.com",
+      password: "123456",
       errorMessage: ""
     };
   }
@@ -22,7 +22,8 @@ export default class Login extends BaseScreen {
     const {navigate} = this.props.navigation;
     const credentials = {email, password};
     authenticationService.login(credentials)
-      .then(async ({data}) => {
+      .then(async (res) => {
+        const data = res && res.data;
         if (data && data._id) {
           await AsyncStorage.setItem('userToken', data._id);
           const shoppingLists = await shoppingListService.query();
@@ -38,7 +39,7 @@ export default class Login extends BaseScreen {
       }) 
       .catch(err => {
         this.setState({
-          errorMessage: err.response.data.message
+          errorMessage: err.response || 'Something went wrong'
         });
       }) 
   }

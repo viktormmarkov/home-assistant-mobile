@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
-import { StyleSheet, View, ScrollView, Text, AsyncStorage } from 'react-native';
-import { SearchBar, ListItem, Divider, Header } from 'react-native-elements';
+import { StyleSheet, ScrollView, Text, RefreshControl} from 'react-native';
+import { SearchBar, ListItem, Divider } from 'react-native-elements';
 import {SafeAreaView} from 'react-navigation'
 import BaseScreen from './BaseScreen';
 
@@ -16,14 +16,15 @@ function filterProducts(i, search) {
 
 export default class HomeScreen extends BaseScreen {
 
-  state: { search: string; products: []; shoppingListItems: [], shoppingListId: string};
+  state: { search: string; products: []; shoppingListItems: [], shoppingListId: string, loading: boolean};
   constructor(props) {
     super(props);
     this.state = {
       search: "",
       products: [],
       shoppingListItems: [],
-      shoppingListId: ""
+      shoppingListId: "",
+      loading: true
     };
   }
   componentDidMount() {
@@ -43,11 +44,12 @@ export default class HomeScreen extends BaseScreen {
   }
   loadShoppingCartItems = async () => {
     const shoppingList = AppStore.safeGet('shoppingList', {});
+    this.setState({loading: true})
     if (shoppingList._id) {
       const {data: items} = await shoppingListService.getShoppingItems(shoppingList._id);
-      this.setState({ shoppingListItems: items })
+      this.setState({ shoppingListItems: items, loading: false})
     } else {
-      this.setState({ shoppingListItems: [] })
+      this.setState({ shoppingListItems: [], loading: false})
     }
     
   }
@@ -96,7 +98,7 @@ export default class HomeScreen extends BaseScreen {
   }
 
   render() {
-    const { search } = this.state;
+    const { search, loading} = this.state;
 
     return (
       <SafeAreaView style={styles.container}>
@@ -106,7 +108,10 @@ export default class HomeScreen extends BaseScreen {
           lightTheme
           value={search}>
         </SearchBar>
-        <ScrollView>
+        <ScrollView
+         refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={this.loadShoppingCartItems} />
+        }>
           <Divider></Divider>
           {this.getShoppingCartItems()}
           <Divider></Divider>

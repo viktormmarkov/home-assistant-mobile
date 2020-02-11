@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import { StyleSheet, View, Button, AsyncStorage } from 'react-native';
 import BaseScreen from './BaseScreen';
+import authenticationService from '../services/authenticationService';
 
 export default class SettingsScreen extends BaseScreen {
   render() {
@@ -14,8 +15,11 @@ export default class SettingsScreen extends BaseScreen {
             color='red'
             title="Sign Out"
             onPress={async () => {
-              await AsyncStorage.removeItem('userToken');
-              navigate('AuthLoading')
+              await authenticationService.logout().then(res => {
+                navigate('AuthLoading')
+              }, err => {
+                navigate('AuthLoading')
+              })
             }}
           />
         </View>
