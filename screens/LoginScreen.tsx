@@ -5,7 +5,7 @@ import BaseScreen from './BaseScreen';
 
 import authenticationService from '../services/authenticationService';
 import shoppingListService from '../services/shoppingListService';
-import AppStore from '../store/AppStore';
+import AppStore from '../stores/AppStore';
 
 export default class Login extends BaseScreen {
   state: { email: string; password: string; errorMessage: string };

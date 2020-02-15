@@ -1,19 +1,21 @@
 import React from 'react';
 import _ from 'lodash';
-import { StyleSheet,  SafeAreaView } from 'react-native';
+import { ScrollView, RefreshControl, View } from 'react-native';
+import { SafeAreaView } from 'react-navigation'
 import BaseScreen from './BaseScreen';
-import { SearchBar, ListItem, Header } from 'react-native-elements';
+import { SearchBar, ListItem } from 'react-native-elements';
 import promotionsService from '../services/promotionsService';
-
+import styles from '../styles/base';
 export default class PromotionsScreen extends BaseScreen {
 
-  state: { search: string; promotions: []; shoppingListItems: [] };
+  state: { search: string; promotions: []; shoppingListItems: []; loading: boolean };
   constructor(props) {
     super(props);
     this.state = {
       search: "",
       promotions: [],
-      shoppingListItems: []
+      shoppingListItems: [],
+      loading: false
     };
   }
 
@@ -22,8 +24,9 @@ export default class PromotionsScreen extends BaseScreen {
   }
 
   loadPromotions = () => {
+    this.setState({loading: true});
     promotionsService.query().then((data) => {
-      this.setState({ promotions: data })
+      this.setState({ promotions: data, loading: false })
     })
   }
 
@@ -43,28 +46,25 @@ export default class PromotionsScreen extends BaseScreen {
 
 
   render() {
-    const {search} = this.state;
+    const {search, loading} = this.state;
     return (
-      <SafeAreaView>
-        <SearchBar style={styles.searchbar}
-          placeholder="Type Here..."
-          onChangeText={this.updateSearch}
-          lightTheme
-          value={search}></SearchBar>
-        {this.getPromotions()}
+      <SafeAreaView style={styles.safeAreaView}>
+        <View style={styles.container}>
+          <SearchBar style={styles.searchbar}
+            placeholder="Type Here..."
+            onChangeText={this.updateSearch}
+            lightTheme
+            value={search}></SearchBar>
+            <ScrollView
+              refreshControl={
+                <RefreshControl refreshing={loading} onRefresh={this.loadPromotions} />
+              }>
+            {this.getPromotions()}
+
+          </ScrollView>
+        </View>
       </SafeAreaView>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-  },
-  searchbar: {
-    flex: 1
-  }
-});
 
