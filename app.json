@@ -23,8 +23,12 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "ios": {
+    "ios": { 
       "supportsTablet": true
+    },
+    "android": {
+      "package": "com.vms.homeassistant",
+      "versionCode": 1
     }
   }
 }

@@ -1,14 +1,15 @@
 import React from 'react';
 import _ from 'lodash';
-import { StyleSheet, ScrollView, Text, RefreshControl} from 'react-native';
+import { StyleSheet, ScrollView, Text, RefreshControl, Platform, View} from 'react-native';
 import { SearchBar, ListItem, Divider } from 'react-native-elements';
 import {SafeAreaView} from 'react-navigation'
 import BaseScreen from './BaseScreen';
-
 import productsService from '../services/productsService';
 import shoppingListService from '../services/shoppingListService';
-
+import Constants from 'expo-constants';
 import AppStore from '../store/AppStore';
+
+const statusBarHeight = Constants.statusBarHeight
 
 function filterProducts(i, search) {
   return i.name.toLowerCase().indexOf(search.toLowerCase()) > -1;
@@ -101,7 +102,8 @@ export default class HomeScreen extends BaseScreen {
     const { search, loading} = this.state;
 
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.safeAreaView}>
+        <View style={styles.container}>
         <SearchBar style={styles.searchbar}
           placeholder="Type Here..."
           onChangeText={this.updateSearch}
@@ -118,6 +120,7 @@ export default class HomeScreen extends BaseScreen {
           <Text>Products</Text>
           {this.getProducts()}
         </ScrollView>
+        </View>
       </SafeAreaView>
     );
   }
@@ -128,6 +131,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     justifyContent: 'center',
+  },
+  safeAreaView: {
+    flex: 1,
+    backgroundColor: '#c1c1c1',
+    justifyContent: 'center',
+    paddingTop: Platform.OS === 'ios' ? 0 : statusBarHeight
   },
   searchbar: {
     flex: 1

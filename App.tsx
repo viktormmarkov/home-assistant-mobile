@@ -15,7 +15,13 @@ const HIDDEN_HEADER_OPTIONS = {
 };
 
 const AuthStack = createStackNavigator({ LoginScreen: LoginScreen }, {...HIDDEN_HEADER_OPTIONS});
-const AppStack = createBottomTabNavigator({ Home: HomeScreen, Promotions: PromotionsScreen, Settings: SettingsScreen}, {});
+const AppStack = createBottomTabNavigator({ Home: HomeScreen, Promotions: PromotionsScreen, Settings: SettingsScreen}, {
+  tabBarOptions: {
+    style: {
+      borderTopWidth: 0 ,
+    },
+  }
+});
 
 const MainNavigator = createSwitchNavigator(
   {
