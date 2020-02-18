@@ -7,6 +7,13 @@ import PromotionsScreen from "./screens/PromotionsScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import LoginScreen from "./screens/LoginScreen";
 import AuthLoadingScreen from "./screens/AuthLoadingScreen";
+import { Provider } from 'react-redux';
+import React, {Component} from 'react';
+
+import configureStore from './stores/configureStore';
+
+const store = configureStore();
+
 const HIDDEN_HEADER_OPTIONS = {
   headerMode: 'none',
   navigationOptions: {
@@ -32,6 +39,15 @@ const MainNavigator = createSwitchNavigator(
   { initialRouteName: "AuthLoading" }
 );
 
-const App = createAppContainer(MainNavigator);
+const AppNavigation = createAppContainer(MainNavigator);
 
-export default App;
+
+export default class App extends Component {
+  render() {
+    return (
+      <Provider store={store}>
+          <AppNavigation />
+      </Provider>
+    );
+  }
+}

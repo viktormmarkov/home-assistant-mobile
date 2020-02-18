@@ -8,12 +8,15 @@ import productsService from '../services/productsService';
 import shoppingListService from '../services/shoppingListService';
 import AppStore from '../stores/AppStore';
 import styles from '../styles/base';
+import { connect } from 'react-redux';
+import { loadProducts } from '../actions/products';
+import { bindActionCreators } from 'redux';
 
 function filterProducts(i, search) {
   return i.name.toLowerCase().indexOf(search.toLowerCase()) > -1;
 }
 
-export default class HomeScreen extends BaseScreen {
+class HomeScreen extends BaseScreen {
 
   state: { search: string; products: []; shoppingListItems: [], shoppingListId: string, loading: boolean};
   constructor(props) {
@@ -37,8 +40,9 @@ export default class HomeScreen extends BaseScreen {
     this.loadShoppingCartItems();
   }
   loadProducts = () => {
+    const {actions} = this.props;
     productsService.query().then((data) => {
-      this.setState({ products: data })
+      actions.loadProducts(data);
     })
   }
   loadShoppingCartItems = async () => {
@@ -56,8 +60,8 @@ export default class HomeScreen extends BaseScreen {
     this.setState({ search: text });
   };
 
-  getProducts = () => {
-    const products = _(this.state.products)
+  getProducts = (productsMeta = []) => {
+    const products = _(productsMeta)
       .filter(i => filterProducts(i, this.state.search))
       .reject((i: any) => this.state.shoppingListItems.find((li: any) => li.product === i._id))
       .sortBy('_id')
@@ -98,7 +102,7 @@ export default class HomeScreen extends BaseScreen {
 
   render() {
     const { search, loading} = this.state;
-
+    const { products: {items: productsMeta} } = this.props;
     return (
       <SafeAreaView style={styles.safeAreaView}>
         <View style={styles.container}>
@@ -116,10 +120,20 @@ export default class HomeScreen extends BaseScreen {
           {this.getShoppingCartItems()}
           <Divider></Divider>
           <Text>Products</Text>
-          {this.getProducts()}
+          {this.getProducts(productsMeta)}
         </ScrollView>
         </View>
       </SafeAreaView>
     );
   }
 }
+
+const mapStateToProps = state => ({
+  products: state.products,
+});
+
+const mapDispatchToProps = dispatch => ({
+  actions: bindActionCreators({loadProducts}, dispatch),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
