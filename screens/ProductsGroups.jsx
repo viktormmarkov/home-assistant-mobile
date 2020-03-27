@@ -3,7 +3,7 @@ import { Text, View} from 'react-native';
 import { SectionGrid, FlatGrid } from 'react-native-super-grid';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import styles from '../styles/base';
-
+import {translate} from '../l10n/translate'
 
 export default class ProductsGroup extends React.Component {
     render() {
@@ -19,7 +19,7 @@ export default class ProductsGroup extends React.Component {
               renderItem={({ item, section, index }) => 
               (<TouchableOpacity style={[styles.itemContainer]} onPress={() => config.tilePress(item, section, index)}>
                 <View key={item._id}>
-                  <Text style={styles.itemName}>{item.name}</Text>
+                  <Text style={styles.itemName}>{translate(item.name)}</Text>
                 </View>
               </TouchableOpacity>)}
               renderSectionHeader={({ section }) => (
