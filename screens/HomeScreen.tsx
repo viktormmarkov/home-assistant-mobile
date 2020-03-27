@@ -110,8 +110,9 @@ class HomeScreen extends BaseScreen {
   render() {
     const { search, loading} = this.state;
     const { products: {items: allProducts}} = this.props;
-    const shoppingcartItems = this.getShoppingCartItems();
+    const shoppingCartItems = this.getShoppingCartItems();
     const productsFiltered = this.filterProducts(allProducts);
+    const selectedProducts =  _(shoppingCartItems).map((sc: any) => sc.product).uniq().value()
     return (
       <SafeAreaView style={styles.safeAreaView}>
         <View style={styles.container}>
@@ -123,7 +124,7 @@ class HomeScreen extends BaseScreen {
           </SearchBar>
           {
             !search ? <ProductGroup products={[
-              {data: shoppingcartItems, title: 'My List', key: 'shoppinglist'}, 
+              {data: shoppingCartItems, title: 'My List', key: 'shoppinglist'}, 
               {data: productsFiltered, title: 'Products', key: 'products'}]}
               grid='section'
               config={{
@@ -133,15 +134,21 @@ class HomeScreen extends BaseScreen {
                   } else {
                     this.removeFromShoppingList(item);
                   }
+                },
+                isSelected: (item) => {
+                  return _.some(selectedProducts, product => item.product === product);
                 }
               }}
             >  
             </ProductGroup> : 
-            <ProductGroup products={products}
+            <ProductGroup products={allProducts.filter(i => filterProducts(i, this.state.search))}
               grid='flat'
               config={{
                 tilePress: (item) => {
                   this.addToShoppingList(item);
+                },
+                isSelected: (item) => {
+                  return _.some(selectedProducts, product => item._id === product);
                 }
               }}
             ></ProductGroup>

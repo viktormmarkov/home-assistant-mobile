@@ -34,6 +34,9 @@ const styles = StyleSheet.create({
         height: 130,
         backgroundColor: '#c1c1c1'
     },
+    isSelected: {
+        backgroundColor: '#6aa52c'
+    },
     itemName: {
         fontSize: 16,
         color: '#fff',
