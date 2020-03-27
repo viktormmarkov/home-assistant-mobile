@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
-import { ScrollView, Text, RefreshControl, View, StyleSheet, Dimensions} from 'react-native';
-import { SearchBar, ListItem, Divider } from 'react-native-elements';
+import { View } from 'react-native';
+import { SearchBar, ListItem } from 'react-native-elements';
 import {SafeAreaView} from 'react-navigation'
 import BaseScreen from './BaseScreen';
 import productsService from '../services/productsService';
@@ -11,8 +11,6 @@ import styles from '../styles/base';
 import { connect } from 'react-redux';
 import { loadProducts } from '../actions/products';
 import { bindActionCreators } from 'redux';
-import { SwipeListView } from 'react-native-swipe-list-view';
-import listMenu, { SWIPE_MENU_SIZE } from '../components/ListMenu'
 import ProductGroup from './ProductsGroups';
 
 
@@ -111,12 +109,22 @@ class HomeScreen extends BaseScreen {
     this.setState({search: ''});
   }
 
+  
+
   render() {
     const { search, loading} = this.state;
     const { products: {items: allProducts}} = this.props;
     const shoppingCartItems = this.getShoppingCartItems();
     const productsFiltered = this.filterProducts(allProducts);
     const selectedProducts =  _(shoppingCartItems).map((sc: any) => sc.product).uniq().value()
+    console.log(productsFiltered);
+    const productsGrouped = [
+      {data: shoppingCartItems, title: 'My List', key: 'shoppinglist'}, 
+      ..._(productsFiltered)
+        .groupBy('mainCategoryName')
+        .map((grouped, key) => ({data: grouped, key, title: key}))
+        .value()
+    ];
     return (
       <SafeAreaView style={styles.safeAreaView}>
         <View style={styles.container}>
@@ -127,9 +135,7 @@ class HomeScreen extends BaseScreen {
             value={search}>
           </SearchBar>
           {
-            !search ? <ProductGroup products={[
-              {data: shoppingCartItems, title: 'My List', key: 'shoppinglist'}, 
-              {data: productsFiltered, title: 'Products', key: 'products'}]}
+            !search ? <ProductGroup products={productsGrouped}
               grid='section'
               config={{
                 tilePress: (item, section, index) => {
