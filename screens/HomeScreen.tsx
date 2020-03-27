@@ -12,7 +12,9 @@ import { connect } from 'react-redux';
 import { loadProducts } from '../actions/products';
 import { bindActionCreators } from 'redux';
 import { SwipeListView } from 'react-native-swipe-list-view';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import listMenu, { SWIPE_MENU_SIZE } from '../components/ListMenu'
+import ProductGroup from './ProductsGroups';
+
 
 function filterProducts(i, search) {
   return i.name.toLowerCase().indexOf(search.toLowerCase()) > -1;
@@ -47,6 +49,7 @@ class HomeScreen extends BaseScreen {
       actions.loadProducts(data);
     })
   }
+
   loadShoppingCartItems = async () => {
     const shoppingList = AppStore.safeGet('shoppingList', {});
     this.setState({loading: true})
@@ -62,12 +65,16 @@ class HomeScreen extends BaseScreen {
     this.setState({ search: text });
   };
 
-  getProducts = (productsMeta = []) => {
-    const products = _(productsMeta)
+  filterProducts = (products) => {
+    return _(products)
       .filter(i => filterProducts(i, this.state.search))
       .reject((i: any) => this.state.shoppingListItems.find((li: any) => li.product === i._id))
       .sortBy('_id')
       .value();
+  }
+
+  getProducts = (productsMeta = []) => {
+    const products = this.filterProducts(productsMeta);
     return products.map((p: any, i) => (<ListItem
         key={i}
         title={p.name}
@@ -96,71 +103,49 @@ class HomeScreen extends BaseScreen {
       .then(this.loadShoppingCartItems);
   }
 
-  closeRow(rowMap, rowKey) {
-    if (rowMap[rowKey]) {
-        rowMap[rowKey].closeRow();
-    }
-  }
-
   removeItemFromCart(rowMap, item) {
-    this.closeRow(rowMap, item._id);
     this.removeFromShoppingList(item);
   }
 
-
   render() {
     const { search, loading} = this.state;
-    const { products: {items: productsMeta}} = this.props;
-    const screenWidth = Math.round(Dimensions.get('window').width);
-    const swipeWidth = -screenWidth * 0.4;
+    const { products: {items: allProducts}} = this.props;
+    const shoppingcartItems = this.getShoppingCartItems();
+    const productsFiltered = this.filterProducts(allProducts);
     return (
       <SafeAreaView style={styles.safeAreaView}>
         <View style={styles.container}>
-        <SearchBar style={styles.searchbar}
-          placeholder="Type Here..."
-          onChangeText={this.updateSearch}
-          lightTheme
-          value={search}>
-        </SearchBar>
-        <ScrollView
-         refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={this.loadShoppingCartItems} />
-        }>
-          <Divider></Divider>
-          <SwipeListView
-            data={this.getShoppingCartItems()}
-            renderItem={ (data: any, rowMap:any) => {
-              const {item} = data;
-              return (
-                <ListItem
-                  key={item._id}
-                  title={item.name}
-                  bottomDivider
-              />
-            )}}
-            renderHiddenItem={ (data, rowMap) => (
-                <View style={stylesa.rowBack}>
-                    <View style={stylesa.rowPlaceholder}></View>
-                    <View style={stylesa.rowMenu}>
-                      <TouchableOpacity onPress={() => this.removeItemFromCart(rowMap, data.item)}>
-                        <Text>
-                          Right
-                        </Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity onPress={() => this.removeItemFromCart(rowMap, data.item)}>
-                        <Text>
-                          Right-Left
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                </View>
-            )}
-            rightOpenValue={swipeWidth}
-        />
-          <Divider></Divider>
-          <Text>Products</Text>
-          {this.getProducts(productsMeta)}
-        </ScrollView>
+          <SearchBar style={styles.searchbar}
+            placeholder="Type Here..."
+            onChangeText={this.updateSearch}
+            lightTheme
+            value={search}>
+          </SearchBar>
+          {
+            !search ? <ProductGroup products={[
+              {data: shoppingcartItems, title: 'My List', key: 'shoppinglist'}, 
+              {data: productsFiltered, title: 'Products', key: 'products'}]}
+              grid='section'
+              config={{
+                tilePress: (item, section, index) => {
+                  if (section.key === 'products') {
+                    this.addToShoppingList(item);
+                  } else {
+                    this.removeFromShoppingList(item);
+                  }
+                }
+              }}
+            >  
+            </ProductGroup> : 
+            <ProductGroup products={products}
+              grid='flat'
+              config={{
+                tilePress: (item) => {
+                  this.addToShoppingList(item);
+                }
+              }}
+            ></ProductGroup>
+          }
         </View>
       </SafeAreaView>
     );
@@ -173,25 +158,6 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({loadProducts}, dispatch),
-});
-
-const stylesa = StyleSheet.create({
-  rowBack: {
-    alignItems: 'center',
-    backgroundColor: '#DDD',
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  rowPlaceholder: {
-    flex: 0.6,
-  },
-  rowMenu: {
-    flex: 0.4,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-  },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
