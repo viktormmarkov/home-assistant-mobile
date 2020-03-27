@@ -107,6 +107,10 @@ class HomeScreen extends BaseScreen {
     this.removeFromShoppingList(item);
   }
 
+  resetSearch() {
+    this.setState({search: ''});
+  }
+
   render() {
     const { search, loading} = this.state;
     const { products: {items: allProducts}} = this.props;
@@ -145,7 +149,13 @@ class HomeScreen extends BaseScreen {
               grid='flat'
               config={{
                 tilePress: (item) => {
-                  this.addToShoppingList(item);
+                  if (_.some(selectedProducts, product => item._id === product)){
+                    const shoppingItem = shoppingCartItems.find((sc: any)=> sc.product === item._id);
+                    this.removeFromShoppingList(shoppingItem);
+                  } else {
+                    this.addToShoppingList(item);
+                  }
+                  this.resetSearch();
                 },
                 isSelected: (item) => {
                   return _.some(selectedProducts, product => item._id === product);
