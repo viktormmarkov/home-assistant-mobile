@@ -12,10 +12,13 @@ import { connect } from 'react-redux';
 import { loadProducts } from '../actions/products';
 import { bindActionCreators } from 'redux';
 import ProductGroup from './ProductsGroups';
+import {translate} from '../l10n/translate'
 
 
 function filterProducts(i, search) {
-  return i.name.toLowerCase().indexOf(search.toLowerCase()) > -1;
+  const original = i.name.toLowerCase();
+  const localized = translate(i.name).toLowerCase();
+  return original.concat(` ${localized}`).indexOf(search.toLowerCase()) > -1;
 }
 
 class HomeScreen extends BaseScreen {
@@ -109,15 +112,12 @@ class HomeScreen extends BaseScreen {
     this.setState({search: ''});
   }
 
-  
-
   render() {
     const { search, loading} = this.state;
     const { products: {items: allProducts}} = this.props;
     const shoppingCartItems = this.getShoppingCartItems();
     const productsFiltered = this.filterProducts(allProducts);
     const selectedProducts =  _(shoppingCartItems).map((sc: any) => sc.product).uniq().value()
-    console.log(productsFiltered);
     const productsGrouped = [
       {data: shoppingCartItems, title: 'My List', key: 'shoppinglist'}, 
       ..._(productsFiltered)
@@ -139,7 +139,7 @@ class HomeScreen extends BaseScreen {
               grid='section'
               config={{
                 tilePress: (item, section, index) => {
-                  if (section.key === 'products') {
+                  if (section.key !== 'shoppinglist') {
                     this.addToShoppingList(item);
                   } else {
                     this.removeFromShoppingList(item);
