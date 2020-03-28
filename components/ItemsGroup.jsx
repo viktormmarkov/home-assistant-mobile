@@ -6,17 +6,18 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import styles from '../styles/base';
 import {translate} from '../l10n/translate'
 
-export default class ProductsGroup extends React.Component {
+export default class ItemsGroup extends React.Component {
     render() {
-        const { products, grid = 'flat', config} = this.props
+        const { items, grid = 'flat', config, refreshControl} = this.props
+        const { selectedClass = 'isSelected' } = config;
         const Grid = grid === 'flat' ? FlatGrid : SectionGrid;
-        const {selectedClass = 'isSelected'} = config;
         return (
             <Grid
+              refreshControl={refreshControl}
               style={styles.gridView}
               itemDimension={100}
-              sections={products}
-              items={products}
+              sections={items}
+              items={items}
               renderItem={({ item, section, index }) => {
                 const isSelected = config.isSelected(item);
                 const touchableStlyes = _.compact([styles.itemContainer, isSelected ? styles[selectedClass]: null]);

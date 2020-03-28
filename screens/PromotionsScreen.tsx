@@ -6,6 +6,8 @@ import BaseScreen from './BaseScreen';
 import { SearchBar, ListItem } from 'react-native-elements';
 import promotionsService from '../services/promotionsService';
 import styles from '../styles/base';
+import ItemsGroup from '../components/ItemsGroup';
+
 export default class PromotionsScreen extends BaseScreen {
 
   state: { search: string; promotions: []; shoppingListItems: []; loading: boolean };
@@ -46,7 +48,7 @@ export default class PromotionsScreen extends BaseScreen {
 
 
   render() {
-    const {search, loading} = this.state;
+    const {search, loading, promotions} = this.state;
     return (
       <SafeAreaView style={styles.safeAreaView}>
         <View style={styles.container}>
@@ -54,14 +56,21 @@ export default class PromotionsScreen extends BaseScreen {
             placeholder="Type Here..."
             onChangeText={this.updateSearch}
             lightTheme
-            value={search}></SearchBar>
-            <ScrollView
-              refreshControl={
+            value={search}/>
+            <ItemsGroup items={promotions}
+              grid='flat'
+              refreshControl = {
                 <RefreshControl refreshing={loading} onRefresh={this.loadPromotions} />
-              }>
-            {this.getPromotions()}
+              }
+              config={{
+                tilePress: (item, section, index) => {},
+                isSelected: (item) => {
+                  return false;
+                }
+              }}
+            />  
 
-          </ScrollView>
+          {/* </View> */}
         </View>
       </SafeAreaView>
     );

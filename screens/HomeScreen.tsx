@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import { View } from 'react-native';
+import { View, ScrollView, RefreshControl} from 'react-native';
 import { SearchBar, ListItem } from 'react-native-elements';
 import {SafeAreaView} from 'react-navigation'
 import BaseScreen from './BaseScreen';
@@ -11,7 +11,7 @@ import styles from '../styles/base';
 import { connect } from 'react-redux';
 import { loadProducts } from '../actions/products';
 import { bindActionCreators } from 'redux';
-import ProductGroup from './ProductsGroups';
+import ItemsGroup from '../components/ItemsGroup';
 import {translate} from '../l10n/translate'
 
 
@@ -135,8 +135,11 @@ class HomeScreen extends BaseScreen {
             value={search}>
           </SearchBar>
           {
-            !search ? <ProductGroup products={productsGrouped}
+            !search ? <ItemsGroup items={productsGrouped}
               grid='section'
+              refreshControl = {
+                <RefreshControl refreshing={loading} onRefresh={this.loadShoppingCartItems} />
+              }
               config={{
                 tilePress: (item, section, index) => {
                   if (section.key !== 'shoppinglist') {
@@ -150,8 +153,8 @@ class HomeScreen extends BaseScreen {
                 }
               }}
             >  
-            </ProductGroup> : 
-            <ProductGroup products={allProducts.filter(i => filterProducts(i, this.state.search))}
+            </ItemsGroup> : 
+            <ItemsGroup items={allProducts.filter(i => filterProducts(i, this.state.search))}
               grid='flat'
               config={{
                 tilePress: (item) => {
@@ -167,7 +170,7 @@ class HomeScreen extends BaseScreen {
                   return _.some(selectedProducts, product => item._id === product);
                 }
               }}
-            ></ProductGroup>
+            ></ItemsGroup>
           }
         </View>
       </SafeAreaView>
