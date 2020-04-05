@@ -27,25 +27,42 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         flexWrap: 'nowrap'
     },
-    itemContainer: {
+    squareContainer: {
         justifyContent: 'flex-end',
         borderRadius: 4,
         padding: 5,
         height: 130,
         backgroundColor: '#c1c1c1'
     },
+    itemContainer: {
+        borderRadius: 4,
+        height: 200,
+        flexDirection: 'column',
+        backgroundColor: '#c1c1c1'
+    },
+    cardHeader: {
+        flex: 0.8,
+        borderRadius: 4,
+    },
+    cardFooter: {
+        flex: 0.3,
+        padding: 5,
+        borderRadius: 4,
+    },
+    cardHeadline: {
+        backgroundColor: '#6aa52c',
+        borderRadius: 4,
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 0.2   
+    },
     isSelected: {
         backgroundColor: '#6aa52c'
     },
     itemName: {
-        fontSize: 16,
-        color: '#fff',
-        fontWeight: '600',
-    },
-    itemCode: {
-        fontWeight: '600',
         fontSize: 12,
         color: '#fff',
+        fontWeight: '600',
     },
     sectionHeader: {
         flex: 1,

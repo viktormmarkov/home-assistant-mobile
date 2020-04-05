@@ -1,13 +1,20 @@
 import React from 'react';
 import _ from 'lodash';
-import { ScrollView, RefreshControl, View } from 'react-native';
+import { ScrollView, RefreshControl, View, Text} from 'react-native';
 import { SafeAreaView } from 'react-navigation'
 import BaseScreen from './BaseScreen';
-import { SearchBar, ListItem } from 'react-native-elements';
+import { SearchBar, ListItem, Button } from 'react-native-elements';
 import promotionsService from '../services/promotionsService';
 import styles from '../styles/base';
 import ItemsGroup from '../components/ItemsGroup';
+import translate from '../l10n/translate';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+// items of interest
+// all  promotions
 
+function formatCurrency(number) {
+  return `${number.toFixed(2)} лв`;
+}
 export default class PromotionsScreen extends BaseScreen {
 
   state: { search: string; promotions: []; shoppingListItems: []; loading: boolean };
@@ -62,15 +69,31 @@ export default class PromotionsScreen extends BaseScreen {
               refreshControl = {
                 <RefreshControl refreshing={loading} onRefresh={this.loadPromotions} />
               }
+              renderItem={(config, {item, section, index}) => {
+                const isSelected = config.isSelected(item);
+                return (
+                  <View style={styles.itemContainer} key={item._id}>
+                    <View style={styles.cardHeader}>
+                      {
+                        isSelected ? ( <Button title={'Add to List'}></Button>) :
+                        (<View style={styles.cardHeadline}><Text style={styles.itemName}>Sugested based on shopping list</Text></View>)
+                      }
+                     
+                    </View>
+                    <View style={styles.cardFooter}>
+                      <Text style={[styles.itemName]}>{item.name}</Text>
+                      <Text style={[styles.itemName]}>{formatCurrency(item.price)}</Text>
+                    </View>
+                  </View>
+                )
+              }}
               config={{
                 tilePress: (item, section, index) => {},
                 isSelected: (item) => {
                   return false;
                 }
               }}
-            />  
-
-          {/* </View> */}
+            />
         </View>
       </SafeAreaView>
     );
