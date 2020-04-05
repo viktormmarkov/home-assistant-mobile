@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     },
     itemContainer: {
         borderRadius: 4,
-        height: 200,
+        height: 130,
         flexDirection: 'column',
         backgroundColor: '#c1c1c1'
     },
