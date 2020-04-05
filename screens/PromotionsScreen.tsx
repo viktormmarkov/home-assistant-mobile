@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import { ScrollView, RefreshControl, View, Text} from 'react-native';
+import { RefreshControl, View, Text} from 'react-native';
 import { SafeAreaView } from 'react-navigation'
 import BaseScreen from './BaseScreen';
 import { SearchBar, ListItem, Button } from 'react-native-elements';
@@ -72,18 +72,9 @@ export default class PromotionsScreen extends BaseScreen {
               renderItem={(config, {item, section, index}) => {
                 const isSelected = config.isSelected(item);
                 return (
-                  <View style={styles.itemContainer} key={item._id}>
-                    <View style={styles.cardHeader}>
-                      {
-                        isSelected ? ( <Button title={'Add to List'}></Button>) :
-                        (<View style={styles.cardHeadline}><Text style={styles.itemName}>Sugested based on shopping list</Text></View>)
-                      }
-                     
-                    </View>
-                    <View style={styles.cardFooter}>
+                  <View style={styles.squareContainer} key={item._id}>
                       <Text style={[styles.itemName]}>{item.name}</Text>
                       <Text style={[styles.itemName]}>{formatCurrency(item.price)}</Text>
-                    </View>
                   </View>
                 )
               }}
