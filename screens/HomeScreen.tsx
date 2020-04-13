@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
-import { View, ScrollView, RefreshControl} from 'react-native';
-import { SearchBar, ListItem } from 'react-native-elements';
+import { View, RefreshControl} from 'react-native';
+import { SearchBar } from 'react-native-elements';
 import {SafeAreaView} from 'react-navigation'
 import BaseScreen from './BaseScreen';
 import productsService from '../services/productsService';
@@ -23,7 +23,7 @@ function filterProducts(i, search) {
 
 class HomeScreen extends BaseScreen {
 
-  state: { search: string; products: []; shoppingListItems: [], shoppingListId: string, loading: boolean};
+  state: { search: string; products: []; shoppingListItems: [], shoppingListId: string, loading: boolean, sections: any};
   constructor(props) {
     super(props);
     this.state = {
@@ -31,7 +31,10 @@ class HomeScreen extends BaseScreen {
       products: [],
       shoppingListItems: [],
       shoppingListId: "",
-      loading: true
+      loading: true,
+      sections: {
+        shoppingList: true
+      }
     };
   }
   componentDidMount() {
@@ -74,16 +77,6 @@ class HomeScreen extends BaseScreen {
       .value();
   }
 
-  getProducts = (productsMeta = []) => {
-    const products = this.filterProducts(productsMeta);
-    return products.map((p: any, i) => (<ListItem
-        key={i}
-        title={p.name}
-        bottomDivider
-        onPress={() => this.addToShoppingList(p)}
-      />))
-  }
-
   getShoppingCartItems = () => {
     return this.state.shoppingListItems
       .filter(i => filterProducts(i, this.state.search))
@@ -113,16 +106,16 @@ class HomeScreen extends BaseScreen {
   }
 
   render() {
-    const { search, loading} = this.state;
+    const { search, loading, sections} = this.state;
     const { products: {items: allProducts}} = this.props;
     const shoppingCartItems = this.getShoppingCartItems();
     const productsFiltered = this.filterProducts(allProducts);
     const selectedProducts =  _(shoppingCartItems).map((sc: any) => sc.product).uniq().value()
     const productsGrouped = [
-      {data: shoppingCartItems, title: 'My List', key: 'shoppinglist'}, 
+      {data: shoppingCartItems, title: 'My List', key: 'shoppingList', show: sections.shoppingList}, 
       ..._(productsFiltered)
         .groupBy('mainCategoryName')
-        .map((grouped, key) => ({data: grouped, key, title: key}))
+        .map((grouped, key) => ({data: grouped, key, title: key, show: sections[key]}))
         .value()
     ];
     return (
@@ -142,7 +135,7 @@ class HomeScreen extends BaseScreen {
               }
               config={{
                 tilePress: (item, section, index) => {
-                  if (section.key !== 'shoppinglist') {
+                  if (section.key !== 'shoppingList') {
                     this.addToShoppingList(item);
                   } else {
                     this.removeFromShoppingList(item);
@@ -150,6 +143,12 @@ class HomeScreen extends BaseScreen {
                 },
                 isSelected: (item) => {
                   return _.some(selectedProducts, product => item.product === product);
+                },
+                headerPress: (item) => {
+                  const current = this.state.sections[item.section.key];
+                  this.setState({
+                    sections: {...this.state.sections, [item.section.key]: !current }
+                  }); 
                 }
               }}
             >  
@@ -168,6 +167,9 @@ class HomeScreen extends BaseScreen {
                 },
                 isSelected: (item) => {
                   return _.some(selectedProducts, product => item._id === product);
+                },
+                headerPress: (item) => {
+                  item.section.show = !item.section.show;
                 }
               }}
             ></ItemsGroup>

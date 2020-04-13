@@ -1,10 +1,12 @@
 import * as _ from 'lodash'
 import React from 'react';
-import { Text, View} from 'react-native';
-import { SectionGrid, FlatGrid } from 'react-native-super-grid';
+import { Text, View } from 'react-native';
+import { SectionGrid, FlatGrid,  } from 'react-native-super-grid';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import styles from '../styles/base';
 import {translate} from '../l10n/translate'
+import SectionList from './SectionList';
+
 function renderItem (config, { item, section, index }) {
   const isSelected = config.isSelected(item);
   const { selectedClass = 'isSelected' } = config;
@@ -18,7 +20,7 @@ function renderItem (config, { item, section, index }) {
 export default class ItemsGroup extends React.Component {
     render() {
         const { items, grid = 'flat', config, refreshControl} = this.props
-        const Grid = grid === 'flat' ? FlatGrid : SectionGrid;
+        const Grid = grid === 'flat' ? FlatGrid : SectionList;
         return (
             <Grid
               refreshControl={refreshControl}
@@ -30,11 +32,15 @@ export default class ItemsGroup extends React.Component {
                 if (this.props.renderItem) {
                   return this.props.renderItem(config, options)
                 } else {
-                  return renderItem(config, options);
+                  if (!options.section || options.section && options.section.show) {
+                    return renderItem(config, options);
+                  } else {
+                    return null;
+                  }
                 }
               }}
-              renderSectionHeader={({ section }) => (
-                <Text style={styles.sectionHeader}>{section.title}</Text>
+              renderSectionHeader={(item) => (
+                <TouchableOpacity onPress={()=>{config.headerPress(item)}}><Text style={styles.sectionHeader}>{item.section.title}</Text></TouchableOpacity>
               )}
             />
         )

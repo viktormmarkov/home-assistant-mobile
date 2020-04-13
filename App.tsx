@@ -7,6 +7,7 @@ import HomeScreen from "./screens/HomeScreen";
 import PromotionsScreen from "./screens/PromotionsScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import LoginScreen from "./screens/LoginScreen";
+import ShoppingListScreen from "./screens/ShoppingListScreen";
 import AuthLoadingScreen from "./screens/AuthLoadingScreen";
 import { Provider } from 'react-redux';
 import React, {Component} from 'react';
@@ -24,7 +25,8 @@ const HIDDEN_HEADER_OPTIONS = {
 };
 
 const AuthStack = createStackNavigator({ LoginScreen: LoginScreen }, {...HIDDEN_HEADER_OPTIONS});
-const AppStack = createBottomTabNavigator({ Home: HomeScreen, Promotions: PromotionsScreen, Settings: SettingsScreen}, {
+const SettingsStack = createStackNavigator({ Settings: SettingsScreen, ShoppingList: ShoppingListScreen});
+const AppStack = createBottomTabNavigator({ Home: HomeScreen, Promotions: PromotionsScreen, Settings: SettingsStack}, {
   tabBarOptions: {
     style: {
       borderTopWidth: 0 ,
