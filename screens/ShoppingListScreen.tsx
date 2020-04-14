@@ -1,34 +1,46 @@
 import React from "react";
 import _ from 'lodash';
-import { StyleSheet, View, AsyncStorage, Text, ScrollView } from "react-native";
+import { AsyncStorage, ScrollView } from "react-native";
 import { Input, Button } from 'react-native-elements';
-import BaseScreen from './BaseScreen';
 import shoppingListService from '../services/shoppingListService';
 import {SafeAreaView} from 'react-navigation'
 import styles from '../styles/base';
 import { ListItem } from 'react-native-elements';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { changeUser } from '../actions/appStore';
 
-
-export default class ShoppingListScreen extends BaseScreen {
-  state: { name: string; errorMessage: string, _id: string, users: [], email: string, currentUser: string };
+export class ShoppingListScreen extends React.Component<Props, State> {
+  state: State;
   constructor(props) {
     super(props);
-    const params = this.getScreenParams();
+    const params = this.props?.navigation?.state?.params;
     this.state = {
       _id: params._id,
       name: params.name,
       errorMessage: "",
-      currentUser: "",
       email: "",
       users: []
     };
   }
 
   componentDidMount() {
+    this.getUser();
+    this.loadUsers();
+  }
+
+  getUser = async () => {
+    const {user, actions} = this.props;
+    const userSaved = await AsyncStorage.getItem('user');
+    if (userSaved && !user) {
+      actions.changeUser(userSaved);
+    }
+  }
+
+  loadUsers = () => {
     const {_id} = this.state;
     shoppingListService.getUsers(_id).then(async users => {
-      const user = await AsyncStorage.getItem('user');
-      this.setState({users, currentUser: user})
+      this.setState({users})
     })
   }
 
@@ -44,7 +56,8 @@ export default class ShoppingListScreen extends BaseScreen {
 
 
   getUsers = () => {
-    const {users, currentUser} = this.state; 
+    const {users} = this.state; 
+    const {user: currentUser} = this.props;
     return users.map((p: any, i) => (<ListItem
         key={i}
         title={p.name}
@@ -86,3 +99,26 @@ export default class ShoppingListScreen extends BaseScreen {
     );
   }
 }
+interface State { 
+  name: string,
+  errorMessage: string, 
+  _id: string, 
+  users: [], 
+  email: string, 
+}
+
+interface Props {
+  navigation: any,
+  actions: any,
+  user: string
+}
+
+const mapStateToProps = state => ({
+  user: state.app.user,
+});
+
+const mapDispatchToProps = dispatch => ({
+  actions: bindActionCreators({changeUser}, dispatch),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ShoppingListScreen);

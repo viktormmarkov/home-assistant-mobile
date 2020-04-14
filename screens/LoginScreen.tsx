@@ -1,15 +1,15 @@
 import React from "react";
 import { StyleSheet, View, AsyncStorage, Text } from "react-native";
 import { Input, Button } from 'react-native-elements';
-import BaseScreen from './BaseScreen';
-
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { changeShoppingList, changeUser } from '../actions/appStore';
 import authenticationService from '../services/authenticationService';
 import shoppingListService from '../services/shoppingListService';
-import AppStore from '../stores/AppStore';
 import {USER, CURRENT_SHOPPING_LIST_ID} from '../stores/AppStoreKeys';
 
-export default class Login extends BaseScreen {
-  state: { email: string; password: string; errorMessage: string };
+export class Login extends React.Component<Props, State>{
+  state: State
   constructor(props) {
     super(props);
     this.state = {
@@ -20,22 +20,23 @@ export default class Login extends BaseScreen {
   }
   login = async () => {
     const {email, password} = this.state;
+    const {actions} = this.props;
     const {navigate} = this.props.navigation;
     const credentials = {email, password};
     authenticationService.login(credentials)
       .then(async (res) => {
         const data = res && res.data;
         if (data && data._id) {
-          await AsyncStorage.setItem('user', data._id);
-          AppStore.set('user', data);
+          await AsyncStorage.setItem(USER, data._id);
+          actions.changeUser(data._id);
           const shoppingListId = await AsyncStorage.getItem(CURRENT_SHOPPING_LIST_ID);
           if (!shoppingListId) {
             const shoppingLists = await shoppingListService.query();
             const activeShoppingList = shoppingLists[0];
             await AsyncStorage.setItem(CURRENT_SHOPPING_LIST_ID, activeShoppingList._id);
-            AppStore.set(CURRENT_SHOPPING_LIST_ID, activeShoppingList._id);
+            actions.changeShoppingList(activeShoppingList._id);
           } else {
-            AppStore.set(CURRENT_SHOPPING_LIST_ID, shoppingListId);
+            actions.changeShoppingList(shoppingListId);
           }
    
           navigate('AuthLoading')
@@ -91,3 +92,24 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   }
 });
+
+interface State { 
+  email: string; 
+  password: string; 
+  errorMessage: string 
+};
+
+interface Props {
+  navigation: any,
+  actions: any
+}
+
+const mapStateToProps = state => ({
+  shoppingListId: state.app.shoppingListId,
+});
+
+const mapDispatchToProps = dispatch => ({
+  actions: bindActionCreators({changeShoppingList, changeUser}, dispatch),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

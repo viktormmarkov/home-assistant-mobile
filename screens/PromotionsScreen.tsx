@@ -2,7 +2,6 @@ import React from 'react';
 import _ from 'lodash';
 import { RefreshControl, View, Text} from 'react-native';
 import { SafeAreaView } from 'react-navigation'
-import BaseScreen from './BaseScreen';
 import { SearchBar, ListItem, Button } from 'react-native-elements';
 import promotionsService from '../services/promotionsService';
 import styles from '../styles/base';
@@ -15,7 +14,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 function formatCurrency(number) {
   return `${number.toFixed(2)} лв`;
 }
-export default class PromotionsScreen extends BaseScreen {
+export default class PromotionsScreen extends React.Component {
 
   state: { search: string; promotions: []; shoppingListItems: []; loading: boolean };
   constructor(props) {

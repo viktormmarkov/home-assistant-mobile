@@ -1,20 +1,17 @@
-import React from 'react';
+import React, {Component} from 'react';
 import _ from 'lodash';
 import { View, RefreshControl, AsyncStorage} from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import {SafeAreaView} from 'react-navigation'
-import BaseScreen from './BaseScreen';
 import productsService from '../services/productsService';
 import shoppingListService from '../services/shoppingListService';
-import AppStore from '../stores/AppStore';
 import styles from '../styles/base';
 import { connect } from 'react-redux';
-import { loadProducts } from '../actions/products';
 import { bindActionCreators } from 'redux';
+import { loadProducts } from '../actions/products';
+import { changeShoppingList } from '../actions/appStore';
 import ItemsGroup from '../components/ItemsGroup';
 import {translate} from '../l10n/translate'
-import { CURRENT_SHOPPING_LIST_ID } from '../stores/AppStoreKeys';
-
 
 function filterProducts(i, search) {
   const original = i.name.toLowerCase();
@@ -22,16 +19,13 @@ function filterProducts(i, search) {
   return original.concat(` ${localized}`).indexOf(search.toLowerCase()) > -1;
 }
 
-class HomeScreen extends BaseScreen {
-
-  state: { search: string; products: []; shoppingListItems: [], shoppingListId: string, loading: boolean, sections: any};
+class HomeScreen extends Component<Props, State> {
+  state: State;
   constructor(props) {
     super(props);
     this.state = {
       search: "",
-      products: [],
       shoppingListItems: [],
-      shoppingListId: "",
       loading: true,
       sections: {
         shoppingList: true
@@ -41,18 +35,22 @@ class HomeScreen extends BaseScreen {
   componentDidMount() {
     this.loadInitialData();
   }
+  componentDidUpdate(props, state) {
+    if (props.shoppingListId !== this.props.shoppingListId) {
+      this.loadShoppingCartItems();
+    }
+  }
   loadInitialData = async () => {
     await this.loadShoppingList();
     this.loadProducts();
     this.loadShoppingCartItems();
   }
   loadShoppingList = async () => {
-    const shoppingListId = AppStore.safeGet(CURRENT_SHOPPING_LIST_ID, null); 
+    const {actions, shoppingListId} = this.props;
     if (!shoppingListId) {
       const shoppingLists = await shoppingListService.query();
       const activeShoppingList = shoppingLists[0];
-      await AsyncStorage.setItem(CURRENT_SHOPPING_LIST_ID, activeShoppingList._id);
-      AppStore.set(CURRENT_SHOPPING_LIST_ID, activeShoppingList._id);
+      actions.changeShoppingList(activeShoppingList._id);
     }
   }
   loadProducts = () => {
@@ -63,7 +61,7 @@ class HomeScreen extends BaseScreen {
   }
 
   loadShoppingCartItems = async () => {
-    const shoppingListId = AppStore.safeGet(CURRENT_SHOPPING_LIST_ID, null);
+    const {shoppingListId} = this.props;
     this.setState({loading: true})
     if (shoppingListId) {
       const {data: items} = await shoppingListService.getShoppingItems(shoppingListId);
@@ -92,7 +90,7 @@ class HomeScreen extends BaseScreen {
   }
 
   addToShoppingList = (item) => {
-    const shoppingListId = AppStore.safeGet(CURRENT_SHOPPING_LIST_ID, null);
+    const {shoppingListId} = this.props;
     shoppingListService.addProduct(shoppingListId, item)
       .then(() => {
         this.loadShoppingCartItems()
@@ -100,7 +98,7 @@ class HomeScreen extends BaseScreen {
   }
 
   removeFromShoppingList = (item) => {
-    const shoppingListId = AppStore.safeGet(CURRENT_SHOPPING_LIST_ID, null);
+    const {shoppingListId} = this.props;
     shoppingListService.removeItem(shoppingListId, item._id)
       .then(this.loadShoppingCartItems);
   }
@@ -115,9 +113,9 @@ class HomeScreen extends BaseScreen {
 
   render() {
     const { search, loading, sections} = this.state;
-    const { products: {items: allProducts}} = this.props;
+    const { products, shoppingListId} = this.props;
     const shoppingCartItems = this.getShoppingCartItems();
-    const productsFiltered = this.filterProducts(allProducts);
+    const productsFiltered = this.filterProducts(products);
     const selectedProducts =  _(shoppingCartItems).map((sc: any) => sc.product).uniq().value()
     const productsGrouped = [
       {data: shoppingCartItems, title: 'My List', key: 'shoppingList', show: sections.shoppingList}, 
@@ -161,7 +159,7 @@ class HomeScreen extends BaseScreen {
               }}
             >  
             </ItemsGroup> : 
-            <ItemsGroup items={allProducts.filter(i => filterProducts(i, this.state.search))}
+            <ItemsGroup items={products.filter(i => filterProducts(i, this.state.search))}
               grid='flat'
               config={{
                 tilePress: (item) => {
@@ -188,12 +186,27 @@ class HomeScreen extends BaseScreen {
   }
 }
 
+interface State {
+  search: string; 
+  shoppingListItems: [], 
+  loading: boolean, 
+  sections: any
+}
+interface Props {
+  shoppingListId: string,
+  products: Array<any>
+  actions: any,
+  navigation: any
+}
+
 const mapStateToProps = state => ({
-  products: state.products,
+  products: state.products.items,
+  shoppingListId: state.app.shoppingListId,
 });
 
 const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators({loadProducts}, dispatch),
+  actions: bindActionCreators({loadProducts, changeShoppingList}, dispatch),
 });
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);

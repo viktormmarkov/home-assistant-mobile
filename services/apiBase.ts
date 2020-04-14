@@ -1,7 +1,8 @@
 import axios from 'axios';
-const baseURL = 'http://192.168.100.28:3031/'; 
+const localURL = 'http://localhost:3031/'; 
+const baseURL = 'http://ec2-13-53-171-61.eu-north-1.compute.amazonaws.com/'; 
 
 export default axios.create({
-    baseURL,
+    baseURL: localURL,
     withCredentials: true
 });
