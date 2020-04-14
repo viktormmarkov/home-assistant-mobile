@@ -27,8 +27,8 @@ export default class ShoppingListScreen extends BaseScreen {
   componentDidMount() {
     const {_id} = this.state;
     shoppingListService.getUsers(_id).then(async users => {
-      const userToken = await AsyncStorage.getItem('userToken');
-      this.setState({users, currentUser: userToken})
+      const user = await AsyncStorage.getItem('user');
+      this.setState({users, currentUser: user})
     })
   }
 

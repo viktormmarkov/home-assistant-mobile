@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import { View, RefreshControl} from 'react-native';
+import { View, RefreshControl, AsyncStorage} from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import {SafeAreaView} from 'react-navigation'
 import BaseScreen from './BaseScreen';
@@ -13,6 +13,7 @@ import { loadProducts } from '../actions/products';
 import { bindActionCreators } from 'redux';
 import ItemsGroup from '../components/ItemsGroup';
 import {translate} from '../l10n/translate'
+import { CURRENT_SHOPPING_LIST_ID } from '../stores/AppStoreKeys';
 
 
 function filterProducts(i, search) {
@@ -41,11 +42,18 @@ class HomeScreen extends BaseScreen {
     this.loadInitialData();
   }
   loadInitialData = async () => {
-    const shoppingLists = await shoppingListService.query();
-    const activeShoppingList = shoppingLists[0];
-    AppStore.set('shoppingList', activeShoppingList);
+    await this.loadShoppingList();
     this.loadProducts();
     this.loadShoppingCartItems();
+  }
+  loadShoppingList = async () => {
+    const shoppingListId = AppStore.safeGet(CURRENT_SHOPPING_LIST_ID, null); 
+    if (!shoppingListId) {
+      const shoppingLists = await shoppingListService.query();
+      const activeShoppingList = shoppingLists[0];
+      await AsyncStorage.setItem(CURRENT_SHOPPING_LIST_ID, activeShoppingList._id);
+      AppStore.set(CURRENT_SHOPPING_LIST_ID, activeShoppingList._id);
+    }
   }
   loadProducts = () => {
     const {actions} = this.props;
@@ -55,10 +63,10 @@ class HomeScreen extends BaseScreen {
   }
 
   loadShoppingCartItems = async () => {
-    const shoppingList = AppStore.safeGet('shoppingList', {});
+    const shoppingListId = AppStore.safeGet(CURRENT_SHOPPING_LIST_ID, null);
     this.setState({loading: true})
-    if (shoppingList._id) {
-      const {data: items} = await shoppingListService.getShoppingItems(shoppingList._id);
+    if (shoppingListId) {
+      const {data: items} = await shoppingListService.getShoppingItems(shoppingListId);
       this.setState({ shoppingListItems: items, loading: false})
     } else {
       this.setState({ shoppingListItems: [], loading: false})
@@ -84,16 +92,16 @@ class HomeScreen extends BaseScreen {
   }
 
   addToShoppingList = (item) => {
-    const shoppingList = AppStore.safeGet('shoppingList', {});
-    shoppingListService.addProduct(shoppingList._id, item)
+    const shoppingListId = AppStore.safeGet(CURRENT_SHOPPING_LIST_ID, null);
+    shoppingListService.addProduct(shoppingListId, item)
       .then(() => {
         this.loadShoppingCartItems()
       });
   }
 
   removeFromShoppingList = (item) => {
-    const shoppingList = AppStore.safeGet('shoppingList', {});
-    shoppingListService.removeItem(shoppingList._id, item._id)
+    const shoppingListId = AppStore.safeGet(CURRENT_SHOPPING_LIST_ID, null);
+    shoppingListService.removeItem(shoppingListId, item._id)
       .then(this.loadShoppingCartItems);
   }
 

@@ -6,6 +6,7 @@ import BaseScreen from './BaseScreen';
 import authenticationService from '../services/authenticationService';
 import shoppingListService from '../services/shoppingListService';
 import AppStore from '../stores/AppStore';
+import {USER, CURRENT_SHOPPING_LIST_ID} from '../stores/AppStoreKeys';
 
 export default class Login extends BaseScreen {
   state: { email: string; password: string; errorMessage: string };
@@ -25,11 +26,18 @@ export default class Login extends BaseScreen {
       .then(async (res) => {
         const data = res && res.data;
         if (data && data._id) {
-          await AsyncStorage.setItem('userToken', data._id);
-          const shoppingLists = await shoppingListService.query();
-          const activeShoppingList = shoppingLists[0];
-          await AsyncStorage.setItem('shoppingListId', activeShoppingList._id);
-          AppStore.set('shoppingList', activeShoppingList);
+          await AsyncStorage.setItem('user', data._id);
+          AppStore.set('user', data);
+          const shoppingListId = await AsyncStorage.getItem(CURRENT_SHOPPING_LIST_ID);
+          if (!shoppingListId) {
+            const shoppingLists = await shoppingListService.query();
+            const activeShoppingList = shoppingLists[0];
+            await AsyncStorage.setItem(CURRENT_SHOPPING_LIST_ID, activeShoppingList._id);
+            AppStore.set(CURRENT_SHOPPING_LIST_ID, activeShoppingList._id);
+          } else {
+            AppStore.set(CURRENT_SHOPPING_LIST_ID, shoppingListId);
+          }
+   
           navigate('AuthLoading')
         } else {
           this.setState({
