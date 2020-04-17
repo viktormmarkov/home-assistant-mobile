@@ -1,7 +1,7 @@
 import React from "react";
 import _ from 'lodash';
-import { AsyncStorage, ScrollView } from "react-native";
-import { Input, Button } from 'react-native-elements';
+import { AsyncStorage, ScrollView, View, Animated, Easing} from "react-native";
+import { Input, Button, Text } from 'react-native-elements';
 import shoppingListService from '../services/shoppingListService';
 import {SafeAreaView} from 'react-navigation'
 import styles from '../styles/base';
@@ -9,8 +9,22 @@ import { ListItem } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { changeUser } from '../actions/appStore';
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 export class ShoppingListScreen extends React.Component<Props, State> {
+
+  static navigationOptions = (options) => {
+    const { navigation } = options
+    return {
+      headerStyle: {
+        backgroundColor: '#5CA666',
+      },
+      headerLeft: navigation.state.params && navigation.state.params.headerLeft,
+      headerRight: navigation.state.params && navigation.state.params.headerRight,
+      headerTintColor: '#fff',
+    }
+  }
+
   state: State;
   constructor(props) {
     super(props);
@@ -18,15 +32,38 @@ export class ShoppingListScreen extends React.Component<Props, State> {
     this.state = {
       _id: params._id,
       name: params.name,
+      shoppingList: params,
       errorMessage: "",
       email: "",
-      users: []
+      users: [],
+      inviteUser: false,
+      inputContainerStyle: { borderBottomWidth: 0}
     };
   }
 
   componentDidMount() {
+    this.setHeader();
     this.getUser();
     this.loadUsers();
+  }
+
+  setHeader = () => {
+    this.props.navigation.setParams({
+      headerRight: (<TouchableOpacity onPress={this.save}><Text style={{
+          color: 'white',
+          padding: 5 }}>
+            Update
+          </Text>
+        </TouchableOpacity>),
+      headerLeft: (<TouchableOpacity onPress={() => {
+        this.props.navigation.pop();
+      }}><Text style={{ 
+        color: 'white',
+         padding: 5}}>
+        Back
+        </Text>
+      </TouchableOpacity>)
+    });
   }
 
   getUser = async () => {
@@ -54,6 +91,9 @@ export class ShoppingListScreen extends React.Component<Props, State> {
     shoppingListService.inviteUser(_id, email);
   }
 
+  cancel = () => {
+    this.setState({inviteUser: false, email: null});
+  }
 
   getUsers = () => {
     const {users} = this.state; 
@@ -67,44 +107,85 @@ export class ShoppingListScreen extends React.Component<Props, State> {
   }
 
   render() {
+    const safeAreaStyle = {...styles.container, ...styles.column}
+    const {shoppingList, inviteUser} = this.state;
     return (
-      <SafeAreaView style={styles.container}>
-        <Input
-          style={{ height: 40 }}
-          onChangeText={name => this.setState({ name })}
-          value={this.state.name}
-          label="Name"
-          autoCapitalize='none'
-        />
-        <Button
-          title="Save"
-          onPress={this.save}/>
-        <Input
-          style={{ height: 40 }}
-          placeholder="email@address.com"
-          onChangeText={email => this.setState({ email })}
-          value={this.state.email}
-          autoCompleteType='email'
-          keyboardType='email-address'
-          label="Email"
-          autoCapitalize='none'
-        />
-        <Button
-          title="Invite"
-          onPress={this.invite}/>
-        <ScrollView>
-          {this.getUsers()}
-        </ScrollView>
+      <SafeAreaView style={safeAreaStyle}>  
+        <View style={styles.cardHeader}>
+          <View style={{flex: 0.9}}>
+
+          </View>
+          <Input
+            inputStyle={{color: 'white', fontSize: 30}}
+            inputContainerStyle={this.state.inputContainerStyle}
+            style={{ height: 90 }}
+            onChangeText={name => this.setState({ name })}
+            value={this.state.name}
+            autoCapitalize='none'
+          />
+          <Text style={{color: 'white', padding: 10}}>
+            Last updated on {new Date(shoppingList.updatedAt).toDateString()}
+          </Text>
+        </View>
+        <View style={styles.cardBody}>
+          <ListItem 
+                key={'members'}
+                title={'Members'}
+                bottomDivider
+          />
+          <ScrollView style={{padding: 10}}>
+            {!inviteUser && <ListItem 
+                key={'add'}
+                title={'Add Shopping List'}
+                bottomDivider
+                leftIcon={{name: 'add'}}
+                onPress={() => {
+                  this.setState({inviteUser: true})
+                }} />}
+            {inviteUser && <View style={{backgroundColor: 'white'}}>
+             <Input
+                style={{ height: 40 }}
+                onChangeText={email => this.setState({ email })}
+                value={this.state.email}
+                label="Enter email to share with"
+                autoCompleteType='email'
+                keyboardType='email-address'
+                autoCapitalize='none'
+              />
+              <View style={{ 
+                flexDirection: 'row',
+                flex: 1,
+              }}>
+                <Button
+                  title="Cancel"
+                  type="clear"
+                  containerStyle={{flex: 1,  flexGrow: 1,}}
+                  onPress={this.cancel}
+                />
+                <Button
+                  title="Add"
+                  type="clear"
+                  containerStyle={{flex: 1,  flexGrow: 1,}}
+                  onPress={this.invite}
+                />
+              </View>
+            </View>}
+            {!inviteUser && this.getUsers()}
+          </ScrollView>
+        </View>
       </SafeAreaView>
     );
   }
 }
 interface State { 
   name: string,
+  inputContainerStyle: any,
   errorMessage: string, 
   _id: string, 
   users: [], 
   email: string, 
+  shoppingList: any,
+  inviteUser: boolean
 }
 
 interface Props {

@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
-import { ScrollView, View, Button, AsyncStorage} from 'react-native';
-import { ListItem, Input} from 'react-native-elements';
+import { ScrollView, View, AsyncStorage} from 'react-native';
+import { ListItem, Input, Button} from 'react-native-elements';
 import {SafeAreaView} from 'react-navigation'
 import styles from '../styles/base';
 
@@ -46,13 +46,15 @@ class SettingsScreen extends React.Component<Props, State> {
         }}
       />))
   }
-  addShoppingList = () => {
+  add = () => {
     return shoppingListService.addItem({name: this.state.name})
       .then(() => {}, (err) => {console.log(err)})
       .finally(() => {
         this.setState({addShoppingList: false});
       });
-    
+  }
+  cancel = () => {
+    this.setState({name: '', addShoppingList: false});
   }
   render() {
     const { navigate } = this.props.navigation;
@@ -65,6 +67,8 @@ class SettingsScreen extends React.Component<Props, State> {
             {!addShoppingList ? <ListItem 
               key={'add'}
               title={'Add Shopping List'}
+              bottomDivider
+              leftIcon={{name: 'add'}}
               onPress={() => {
                 this.setState({addShoppingList: true})
               }} /> : null
@@ -77,15 +81,27 @@ class SettingsScreen extends React.Component<Props, State> {
                 label="Shopping List Name"
                 autoCapitalize='none'
               />
-              <Button
-                title="Add"
-                onPress={this.addShoppingList}
-              />
+              <View style={{ 
+                flexDirection: 'row',
+                flex: 1,
+              }}>
+                <Button
+                  title="Cancel"
+                  type="clear"
+                  containerStyle={{flex: 1,  flexGrow: 1,}}
+                  onPress={this.cancel}
+                />
+                <Button
+                  title="Add"
+                  type="clear"
+                  containerStyle={{flex: 1,  flexGrow: 1,}}
+                  onPress={this.add}
+                />
+              </View>
                </React.Fragment> : null
               }
           </ScrollView>
           <Button
-            color='red'
             title="Sign Out"
             onPress={async () => {
               await authenticationService.logout().then(res => {

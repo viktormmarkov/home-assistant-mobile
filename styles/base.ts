@@ -1,18 +1,19 @@
-import { StyleSheet, Platform } from 'react-native';
-import Constants from 'expo-constants';
-const statusBarHeight = Constants.statusBarHeight
+import { StyleSheet } from 'react-native';
+import { primaryColor } from './colors';
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
-        justifyContent: 'center',
+        backgroundColor: '#F2F2F2',
+    },
+    column: {
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
     },
     safeAreaView: {
         flex: 1,
         backgroundColor: '#c1c1c1',
         justifyContent: 'center',
-        paddingTop: Platform.OS === 'ios' ? 0 : statusBarHeight
     },
     searchbar: {
         flex: 1
@@ -41,20 +42,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#c1c1c1'
     },
     cardHeader: {
-        flex: 0.8,
-        borderRadius: 4,
-    },
-    cardFooter: {
         flex: 0.3,
         padding: 5,
-        borderRadius: 4,
+        backgroundColor: primaryColor
     },
-    cardHeadline: {
-        backgroundColor: '#6aa52c',
-        borderRadius: 4,
-        justifyContent: 'center',
-        alignItems: 'center',
-        flex: 0.2   
+    cardBody: {
+        flex: 0.7
     },
     isSelected: {
         backgroundColor: '#6aa52c'
