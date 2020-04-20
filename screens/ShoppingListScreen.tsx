@@ -9,6 +9,7 @@ import { ListItem } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { changeUser } from '../actions/appStore';
+import { saveShoppingItem } from '../actions/shoppingLists';
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 export class ShoppingListScreen extends React.Component<Props, State> {
@@ -77,13 +78,16 @@ export class ShoppingListScreen extends React.Component<Props, State> {
   loadUsers = () => {
     const {_id} = this.state;
     shoppingListService.getUsers(_id).then(async users => {
-      this.setState({users})
+      this.setState({users});
     })
   }
 
   save = () => {
+    const {actions} = this.props;
     const {_id, name} = this.state;
-    shoppingListService.updateItem(_id, {name});
+    shoppingListService.updateItem(_id, {name}).then(res => {
+      actions.saveShoppingItem(res.data);
+    });
   }
 
   invite = () => {
@@ -199,7 +203,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators({changeUser}, dispatch),
+  actions: bindActionCreators({changeUser, saveShoppingItem}, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ShoppingListScreen);

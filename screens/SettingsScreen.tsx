@@ -9,6 +9,7 @@ import authenticationService from '../services/authenticationService';
 import shoppingListService from '../services/shoppingListService';
 import { connect } from 'react-redux';
 import { changeShoppingList } from '../actions/appStore';
+import { loadShoppingItems } from '../actions/shoppingLists';
 import { bindActionCreators } from 'redux';
 
 class SettingsScreen extends React.Component<Props, State> {
@@ -17,20 +18,19 @@ class SettingsScreen extends React.Component<Props, State> {
     super(props);
     this.state = {
       addShoppingList: false,
-      shoppingLists: [],
       name: ''
     }
   }
   componentDidMount() {
+    const { actions } = this.props;
     shoppingListService.query().then(data => {
-     this.setState({shoppingLists: data})
+      actions.loadShoppingItems(data);
     });
   }
 
   getShoppingLists = () => {
-    const {shoppingListId, actions} = this.props;
-    const { navigate } = this.props.navigation;
-    const {shoppingLists} = this.state; 
+    const {shoppingListId, actions, shoppingLists} = this.props;
+    const { navigate } = this.props.navigation; 
     return shoppingLists.map((p: any, i) => (<ListItem
         key={i}
         title={`${p.name}`}
@@ -118,23 +118,24 @@ class SettingsScreen extends React.Component<Props, State> {
 }
 
 interface State { 
-  shoppingLists: Array<any>, 
   addShoppingList: boolean,
   name: string
 }
 interface Props {
   shoppingListId: string,
   actions: any,
-  navigation: any
+  navigation: any,
+  shoppingLists: Array<any>,
 }
 
 const mapStateToProps = state => ({
   products: state.products.items,
   shoppingListId: state.app.shoppingListId,
+  shoppingLists: state.shoppingLists.items
 });
 
 const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators({changeShoppingList}, dispatch),
+  actions: bindActionCreators({changeShoppingList, loadShoppingItems}, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettingsScreen);
