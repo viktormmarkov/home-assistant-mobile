@@ -1,6 +1,7 @@
 import * as _ from 'lodash'
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text, View} from 'react-native';
+import { Icon} from 'react-native-elements';
 import { SectionGrid, FlatGrid,  } from 'react-native-super-grid';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import styles from '../styles/base';
@@ -39,9 +40,28 @@ export default class ItemsGroup extends React.Component {
                   }
                 }
               }}
-              renderSectionHeader={(item) => (
-                <TouchableOpacity onPress={()=>{config.headerPress(item)}}><Text style={styles.sectionHeader}>{item.section.title}</Text></TouchableOpacity>
-              )}
+              renderSectionHeader={(item) => {
+                const icon = item.section.show ? 'keyboard-arrow-up' : 'keyboard-arrow-down';
+                return (
+                    <TouchableOpacity style={{
+                      flex: 1,
+                      flexGrow: 1,
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      backgroundColor: '#636e72',
+                    }} onPress={()=>{config.headerPress(item)}} >
+                    <Text style={styles.sectionHeader}>{item.section.title}</Text>
+                    <Icon 
+                    name={icon}
+                    color="#ffffff"
+                    containerStyle={{
+                      padding: 5
+                    }}
+                    >
+                     </Icon>
+                    </TouchableOpacity>
+                  );
+              }}
             />
         )
     }

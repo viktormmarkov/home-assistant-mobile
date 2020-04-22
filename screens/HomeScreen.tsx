@@ -40,6 +40,7 @@ class HomeScreen extends Component<Props, State> {
     this.loadProducts();
     this.loadShoppingCartItems();
   }
+  
   loadShoppingList = async () => {
     const {actions, shoppingListId} = this.props;
     if (!shoppingListId) {
@@ -48,13 +49,13 @@ class HomeScreen extends Component<Props, State> {
       actions.changeShoppingList(activeShoppingList._id);
     }
   }
+
   loadProducts = () => {
     const {actions} = this.props;
     productsService.query().then((data) => {
       actions.loadProducts(data);
     })
   }
-
   loadShoppingCartItems = async () => {
     const {shoppingListId} = this.props;
     this.setState({loading: true})
@@ -69,7 +70,6 @@ class HomeScreen extends Component<Props, State> {
   updateSearch = (text) => {
     this.setState({ search: text });
   };
-
   filterProducts = (products) => {
     return _(products)
       .filter(i => filterProducts(i, this.state.search))
@@ -77,13 +77,11 @@ class HomeScreen extends Component<Props, State> {
       .sortBy('_id')
       .value();
   }
-
   getShoppingCartItems = () => {
     return this.state.shoppingListItems
       .filter(i => filterProducts(i, this.state.search))
       .sort((a: any, b: any) => a.id - b.id);
   }
-
   addToShoppingList = (item) => {
     const {shoppingListId} = this.props;
     shoppingListService.addProduct(shoppingListId, item)
@@ -91,24 +89,21 @@ class HomeScreen extends Component<Props, State> {
         this.loadShoppingCartItems()
       });
   }
-
   removeFromShoppingList = (item) => {
     const {shoppingListId} = this.props;
     shoppingListService.removeItem(shoppingListId, item._id)
       .then(this.loadShoppingCartItems);
   }
-
   removeItemFromCart(rowMap, item) {
     this.removeFromShoppingList(item);
   }
-
   resetSearch() {
     this.setState({search: ''});
   }
 
   render() {
     const { search, loading, sections} = this.state;
-    const { products, shoppingListId} = this.props;
+    const { products } = this.props;
     const shoppingCartItems = this.getShoppingCartItems();
     const productsFiltered = this.filterProducts(products);
     const selectedProducts =  _(shoppingCartItems).map((sc: any) => sc.product).uniq().value()
@@ -121,7 +116,7 @@ class HomeScreen extends Component<Props, State> {
     ];
     return (
       <SafeAreaView style={styles.safeAreaView}>
-        <View style={styles.container}>
+        <View style={{...styles.container}}>
           <SearchBar style={styles.searchbar}
             placeholder="Type Here..."
             onChangeText={this.updateSearch}
