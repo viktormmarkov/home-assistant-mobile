@@ -11,7 +11,7 @@ import { bindActionCreators } from 'redux';
 import { loadProducts } from '../actions/products';
 import { changeShoppingList } from '../actions/appStore';
 import ItemsGroup from '../components/ItemsGroup';
-import {translate} from '../l10n/translate'
+import { translate } from '../l10n/translate'
 
 function filterProducts(i, search) {
   const original = i.name.toLowerCase();
@@ -34,11 +34,6 @@ class HomeScreen extends Component<Props, State> {
   }
   componentDidMount() {
     this.loadInitialData();
-  }
-  componentDidUpdate(props, state) {
-    if (props.shoppingListId !== this.props.shoppingListId) {
-      this.loadShoppingCartItems();
-    }
   }
   loadInitialData = async () => {
     await this.loadShoppingList();
