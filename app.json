@@ -28,7 +28,7 @@
     },
     "android": {
       "package": "com.vms.homeassistant",
-      "versionCode": 3
+      "versionCode": 4
     }
   }
 }
