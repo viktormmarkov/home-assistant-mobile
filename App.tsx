@@ -2,6 +2,7 @@ import { createAppContainer, createSwitchNavigator } from "react-navigation";
 import { createStackNavigator } from 'react-navigation-stack';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import i18n from "i18n-js";
+import { Icon } from 'react-native-elements';
 
 import HomeScreen from "./screens/HomeScreen";
 import PromotionsScreen from "./screens/PromotionsScreen";
@@ -12,6 +13,7 @@ import AuthLoadingScreen from "./screens/AuthLoadingScreen";
 import { Provider } from 'react-redux';
 import React, {Component} from 'react';
 import { translate } from './l10n/translate'
+import {primaryColor} from './styles/colors';
 
 import configureStore from './stores/configureStore';
 
@@ -26,13 +28,45 @@ const HIDDEN_HEADER_OPTIONS = {
 
 const AuthStack = createStackNavigator({ LoginScreen: LoginScreen }, {...HIDDEN_HEADER_OPTIONS});
 const SettingsStack = createStackNavigator({ Settings: SettingsScreen, ShoppingList: ShoppingListScreen});
-const AppStack = createBottomTabNavigator({ Home: HomeScreen, Promotions: PromotionsScreen, Settings: SettingsStack}, {
+
+const defaultTabBarOptions = {
   tabBarOptions: {
-    style: {
-      borderTopWidth: 0 ,
-    },
-  }
-});
+    showIcon: true,
+    activeTintColor: primaryColor
+  },
+};
+
+const getIcon = ({focused, tintColor}, icon) => (
+  <Icon
+    name={icon}
+    size = {focused ? 28 : 20}
+    color={focused ? tintColor : 'gray'}
+  />
+)
+
+HomeScreen.navigationOptions = {
+  ...defaultTabBarOptions,
+  tabBarLabel: "Home",
+  tabBarIcon: (options) => getIcon(options, "list")
+
+};
+
+PromotionsScreen.navigationOptions = {
+  ...defaultTabBarOptions,
+  tabBarLabel: "Promotions",
+  tabBarIcon: (options) => getIcon(options, "star")
+}
+
+
+SettingsStack.navigationOptions = {
+  ...defaultTabBarOptions,
+  tabBarLabel: "Settings",
+  tabBarIcon: (options) => getIcon(options, "settings")
+}
+
+const AppStack = createBottomTabNavigator({
+   Home: HomeScreen, Promotions: PromotionsScreen, Settings: SettingsStack,
+  });
 
 const MainNavigator = createSwitchNavigator(
   {

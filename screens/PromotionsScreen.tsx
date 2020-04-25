@@ -6,10 +6,7 @@ import { SearchBar, ListItem, Button } from 'react-native-elements';
 import promotionsService from '../services/promotionsService';
 import styles from '../styles/base';
 import ItemsGroup from '../components/ItemsGroup';
-import translate from '../l10n/translate';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 // items of interest
-// all  promotions
 
 function formatCurrency(number) {
   return `${number.toFixed(2)} лв`;
