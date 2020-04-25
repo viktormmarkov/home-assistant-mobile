@@ -140,7 +140,7 @@ export class ShoppingListScreen extends React.Component<Props, State> {
           <ScrollView style={{padding: 10}}>
             {!inviteUser && <ListItem 
                 key={'add'}
-                title={'Add Shopping List'}
+                title={'Invite a friend'}
                 bottomDivider
                 leftIcon={{name: 'add'}}
                 onPress={() => {

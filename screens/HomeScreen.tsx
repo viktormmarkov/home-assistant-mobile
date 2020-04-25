@@ -40,6 +40,11 @@ class HomeScreen extends Component<Props, State> {
     this.loadProducts();
     this.loadShoppingCartItems();
   }
+  componentDidUpdate = (props) => {
+    if (props.shoppingListId !== this.props.shoppingListId) {
+      this.loadShoppingCartItems();
+    }
+  }
   
   loadShoppingList = async () => {
     const {actions, shoppingListId} = this.props;

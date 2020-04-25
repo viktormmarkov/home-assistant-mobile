@@ -1,5 +1,7 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform} from 'react-native';
 import { primaryColor } from './colors';
+import Constants from 'expo-constants';
+const statusBarHeight = Constants.statusBarHeight
 
 const styles = StyleSheet.create({
     container: {
@@ -14,6 +16,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#c1c1c1',
         justifyContent: 'center',
+        paddingTop: Platform.OS === 'ios' ? 0 : statusBarHeight
     },
     searchbar: {
         flex: 1
