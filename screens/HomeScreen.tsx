@@ -115,7 +115,7 @@ class HomeScreen extends Component<Props, State> {
     const currentShoppingList = shoppingLists.find(i => i._id === shoppingListId);
 
     const productsGrouped = [
-      {data: shoppingCartItems, title: `Shopping List - "${currentShoppingList.name}"`, key: 'shoppingList', show: sections.shoppingList}, 
+      {data: shoppingCartItems, title: `Shopping List - "${currentShoppingList && currentShoppingList.name || ''} "`, key: 'shoppingList', show: sections.shoppingList}, 
       ..._(productsFiltered)
         .groupBy('mainCategoryName')
         .map((grouped, key) => ({data: grouped, key, title: key, show: sections[key]}))
