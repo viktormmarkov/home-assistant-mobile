@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import _ from 'lodash';
-import { View, RefreshControl, AsyncStorage} from 'react-native';
+import { View, RefreshControl} from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import {SafeAreaView} from 'react-navigation'
 import productsService from '../services/productsService';
@@ -36,7 +36,7 @@ class HomeScreen extends Component<Props, State> {
     this.loadInitialData();
   }
   loadInitialData = async () => {
-    await this.loadShoppingList();
+    await this.checkShoppingListLoaded();
     this.loadProducts();
     this.loadShoppingCartItems();
   }
@@ -46,7 +46,7 @@ class HomeScreen extends Component<Props, State> {
     }
   }
   
-  loadShoppingList = async () => {
+  checkShoppingListLoaded = async () => {
     const {actions, shoppingListId} = this.props;
     if (!shoppingListId) {
       const shoppingLists = await shoppingListService.query();
@@ -108,12 +108,14 @@ class HomeScreen extends Component<Props, State> {
 
   render() {
     const { search, loading, sections} = this.state;
-    const { products } = this.props;
+    const { products, shoppingListId, shoppingLists } = this.props;
     const shoppingCartItems = this.getShoppingCartItems();
     const productsFiltered = this.filterProducts(products);
-    const selectedProducts =  _(shoppingCartItems).map((sc: any) => sc.product).uniq().value()
+    const selectedProducts =  _(shoppingCartItems).map((sc: any) => sc.product).uniq().value();
+    const currentShoppingList = shoppingLists.find(i => i._id === shoppingListId);
+
     const productsGrouped = [
-      {data: shoppingCartItems, title: 'My List', key: 'shoppingList', show: sections.shoppingList}, 
+      {data: shoppingCartItems, title: `Shopping List - "${currentShoppingList.name}"`, key: 'shoppingList', show: sections.shoppingList}, 
       ..._(productsFiltered)
         .groupBy('mainCategoryName')
         .map((grouped, key) => ({data: grouped, key, title: key, show: sections[key]}))
@@ -192,11 +194,13 @@ interface Props {
   products: Array<any>
   actions: any,
   navigation: any
+  shoppingLists: Array<any>
 }
 
 const mapStateToProps = state => ({
   products: state.products.items,
   shoppingListId: state.app.shoppingListId,
+  shoppingLists: state.shoppingLists.items
 });
 
 const mapDispatchToProps = dispatch => ({
