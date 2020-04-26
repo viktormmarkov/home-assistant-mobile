@@ -29,6 +29,12 @@ class PromotionsScreen extends React.Component<Props, State>{
     this.fetchPromotions();
   }
 
+  componentDidUpdate = (props) => {
+    if (props.shoppingListId !== this.props.shoppingListId) {
+      this.fetchPromotions();
+    }
+  }
+  
   fetchPromotions = () => {
     const {actions, shoppingListId} = this.props;
     this.setState({loading: true});
