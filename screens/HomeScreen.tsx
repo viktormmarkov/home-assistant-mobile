@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import _ from 'lodash';
-import { View, RefreshControl} from 'react-native';
+import { View, RefreshControl, AsyncStorage} from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import {SafeAreaView} from 'react-navigation'
 import productsService from '../services/productsService';
@@ -9,7 +9,7 @@ import styles from '../styles/base';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { loadProducts } from '../actions/products';
-import { changeShoppingList } from '../actions/appStore';
+import { changeShoppingList, changeUser } from '../actions/appStore';
 import ItemsGroup from '../components/ItemsGroup';
 import { translate } from '../l10n/translate'
 
@@ -34,6 +34,14 @@ class HomeScreen extends Component<Props, State> {
   }
   componentDidMount() {
     this.loadInitialData();
+  }
+
+  getUser = async () => {
+    const {user, actions} = this.props;
+    const userSaved = await AsyncStorage.getItem('user');
+    if (userSaved && !user) {
+      actions.changeUser(userSaved);
+    }
   }
   loadInitialData = async () => {
     await this.checkShoppingListLoaded();
@@ -108,14 +116,13 @@ class HomeScreen extends Component<Props, State> {
 
   render() {
     const { search, loading, sections} = this.state;
-    const { products, shoppingListId, shoppingLists } = this.props;
+    const { products, shoppingListId, shoppingLists, user} = this.props;
     const shoppingCartItems = this.getShoppingCartItems();
     const productsFiltered = this.filterProducts(products);
     const selectedProducts =  _(shoppingCartItems).map((sc: any) => sc.product).uniq().value();
     const currentShoppingList = shoppingLists.find(i => i._id === shoppingListId);
-
     const productsGrouped = [
-      {data: shoppingCartItems, title: `Shopping List - "${currentShoppingList && currentShoppingList.name || ''} "`, key: 'shoppingList', show: sections.shoppingList}, 
+      {data: shoppingCartItems, title: `Shopping List - "${currentShoppingList && currentShoppingList.name || ''}"`, key: 'shoppingList', show: sections.shoppingList}, 
       ..._(productsFiltered)
         .groupBy('mainCategoryName')
         .map((grouped, key) => ({data: grouped, key, title: key, show: sections[key]}))
@@ -156,17 +163,24 @@ class HomeScreen extends Component<Props, State> {
               }}
             >  
             </ItemsGroup> : 
-            <ItemsGroup items={products.filter(i => filterProducts(i, this.state.search))}
+            <ItemsGroup items={[...products.filter(i => filterProducts(i, this.state.search)), {name: this.state.search}]}
               grid='flat'
               config={{
                 tilePress: (item) => {
-                  if (_.some(selectedProducts, product => item._id === product)){
-                    const shoppingItem = shoppingCartItems.find((sc: any)=> sc.product === item._id);
-                    this.removeFromShoppingList(shoppingItem);
+                  if (item._id) {
+                    if (_.some(selectedProducts, product => item._id === product)){
+                      const shoppingItem = shoppingCartItems.find((sc: any)=> sc.product === item._id);
+                      this.removeFromShoppingList(shoppingItem);
+                    } else {
+                      this.addToShoppingList(item);
+                    }
+                    this.resetSearch();
                   } else {
-                    this.addToShoppingList(item);
+                    productsService.addPersonalProduct(user, {name: this.state.search}).then((item) => {
+                      this.addToShoppingList(item);
+                      this.resetSearch();
+                    });
                   }
-                  this.resetSearch();
                 },
                 isSelected: (item) => {
                   return _.some(selectedProducts, product => item._id === product);
@@ -194,17 +208,19 @@ interface Props {
   products: Array<any>
   actions: any,
   navigation: any
-  shoppingLists: Array<any>
+  shoppingLists: Array<any>,
+  user: string
 }
 
 const mapStateToProps = state => ({
   products: state.products.items,
   shoppingListId: state.app.shoppingListId,
-  shoppingLists: state.shoppingLists.items
+  shoppingLists: state.shoppingLists.items,
+  user: state.app.user
 });
 
 const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators({loadProducts, changeShoppingList}, dispatch),
+  actions: bindActionCreators({loadProducts, changeShoppingList, changeUser}, dispatch),
 });
 
 
