@@ -3,12 +3,13 @@ import _ from 'lodash';
 import { RefreshControl, View, Text} from 'react-native';
 import { SafeAreaView } from 'react-navigation'
 import { SearchBar } from 'react-native-elements';
-import promotionsService from '../services/promotionsService';
-import styles from '../styles/base';
-import ItemsGroup from '../components/ItemsGroup';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { loadPromotions } from '../actions/promotions';
+import { loadPromotions, loadRelatedPromotions} from '../actions/promotions';
+import promotionsService from '../services/promotionsService';
+import shoppingListService from '../services/shoppingListService';
+import ItemsGroup from '../components/ItemsGroup';
+import styles from '../styles/base';
 
 function formatCurrency(number) {
   return `${number.toFixed(2)} лв`;
@@ -29,11 +30,14 @@ class PromotionsScreen extends React.Component<Props, State>{
   }
 
   fetchPromotions = () => {
-    const {actions} = this.props;
+    const {actions, shoppingListId} = this.props;
     this.setState({loading: true});
     promotionsService.query().then((data) => {
       actions.loadPromotions(data);
       this.setState({loading: false })
+    })
+    shoppingListService.getRelatedPromotions(shoppingListId).then((data) => {
+      actions.loadRelatedPromotions(data);
     })
   }
 
@@ -42,8 +46,12 @@ class PromotionsScreen extends React.Component<Props, State>{
   };
 
   render() {
-    const {promotions} = this.props;
+    const {promotions, related} = this.props;
     const {search, loading} = this.state;
+    const sections = [
+      {data: related, title: 'Related', key: 'related', show: true},
+      {data: promotions, title: 'All', key: 'all', show: true},
+    ];
     return (
       <SafeAreaView style={styles.safeAreaView}>
         <View style={styles.container}>
@@ -52,8 +60,8 @@ class PromotionsScreen extends React.Component<Props, State>{
             onChangeText={this.updateSearch}
             lightTheme
             value={search}/>
-            <ItemsGroup items={promotions}
-              grid='flat'
+            <ItemsGroup items={sections}
+              grid='section'
               refreshControl = {
                 <RefreshControl refreshing={loading} onRefresh={this.fetchPromotions} />
               }
@@ -70,7 +78,8 @@ class PromotionsScreen extends React.Component<Props, State>{
                 tilePress: (item, section, index) => {},
                 isSelected: (item) => {
                   return false;
-                }
+                },
+                headerPress: () => {}
               }}
             />
         </View>
@@ -84,19 +93,25 @@ interface State {
   loading: boolean, 
 }
 interface Props {
-  promotions: Array<any>
+  promotions: Array<any>,
+  related: Array<any>
   actions: any,
   navigation: any
   shoppingLists: Array<any>
+  shoppingListId: string
 }
 
 const mapStateToProps = state => ({
   promotions: state.promotions.items,
+  related: state.promotions.related,
   shoppingListId: state.app.shoppingListId,
 });
 
 const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators({loadPromotions}, dispatch),
+  actions: bindActionCreators({
+    loadPromotions, 
+    loadRelatedPromotions
+  }, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PromotionsScreen);

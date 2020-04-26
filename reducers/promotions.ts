@@ -1,7 +1,8 @@
-import { PROMOTIONS_LOADED } from '../constants';
+import { PROMOTIONS_LOADED, RELATED_PROMOTIONS_LOADED } from '../constants';
 
 const initialState = {
-    items: []
+    items: [],
+    related: [],
 };
 
 const promotionsLoaded = (state = initialState, action) => {
@@ -10,6 +11,11 @@ const promotionsLoaded = (state = initialState, action) => {
             return {
                 ...state,
                 items: action.payload
+            };
+        case RELATED_PROMOTIONS_LOADED: 
+            return {
+                ...state,
+                related: action.payload
             };
         default: return state;
     }

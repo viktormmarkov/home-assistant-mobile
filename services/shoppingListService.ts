@@ -20,6 +20,9 @@ class ShoppingListService extends ServiceBase {
     getUsers(id) {
       return this.api.get(`/${this.entity}/${id}/users`).then(res => res.data);
     }
+    getRelatedPromotions(id) {
+      return this.api.get(`/${this.entity}/${id}/promotions`).then(res => res.data);
+    }
 }
 
 export default new ShoppingListService();
