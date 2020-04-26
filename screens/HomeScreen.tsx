@@ -43,11 +43,14 @@ class HomeScreen extends Component<Props, State> {
       actions.changeUser(userSaved);
     }
   }
+
   loadInitialData = async () => {
     await this.checkShoppingListLoaded();
+    await this.getUser();
     this.loadProducts();
     this.loadShoppingCartItems();
   }
+
   componentDidUpdate = (props) => {
     if (props.shoppingListId !== this.props.shoppingListId) {
       this.loadShoppingCartItems();
@@ -69,6 +72,7 @@ class HomeScreen extends Component<Props, State> {
       actions.loadProducts(data);
     })
   }
+
   loadShoppingCartItems = async () => {
     const {shoppingListId} = this.props;
     this.setState({loading: true})
@@ -80,9 +84,11 @@ class HomeScreen extends Component<Props, State> {
     }
     
   }
+
   updateSearch = (text) => {
     this.setState({ search: text });
   };
+
   filterProducts = (products) => {
     return _(products)
       .filter(i => filterProducts(i, this.state.search))
@@ -90,11 +96,13 @@ class HomeScreen extends Component<Props, State> {
       .sortBy('_id')
       .value();
   }
+
   getShoppingCartItems = () => {
     return this.state.shoppingListItems
       .filter(i => filterProducts(i, this.state.search))
       .sort((a: any, b: any) => a.id - b.id);
   }
+
   addToShoppingList = (item) => {
     const {shoppingListId} = this.props;
     shoppingListService.addProduct(shoppingListId, item)
@@ -102,14 +110,17 @@ class HomeScreen extends Component<Props, State> {
         this.loadShoppingCartItems()
       });
   }
+
   removeFromShoppingList = (item) => {
     const {shoppingListId} = this.props;
     shoppingListService.removeItem(shoppingListId, item._id)
       .then(this.loadShoppingCartItems);
   }
+
   removeItemFromCart(rowMap, item) {
     this.removeFromShoppingList(item);
   }
+
   resetSearch() {
     this.setState({search: ''});
   }
