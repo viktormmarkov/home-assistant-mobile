@@ -52,17 +52,17 @@ class HomeScreen extends Component<Props, State> {
   }
 
   componentDidUpdate = (props) => {
-    if (props.shoppingListId !== this.props.shoppingListId) {
+    if (props.shoppingList._id !== this.props.shoppingList._id) {
       this.loadShoppingCartItems();
     }
   }
   
   checkShoppingListLoaded = async () => {
-    const {actions, shoppingListId} = this.props;
-    if (!shoppingListId) {
+    const {actions, shoppingList} = this.props;
+    if (!shoppingList._id) {
       const shoppingLists = await shoppingListService.query();
       const activeShoppingList = shoppingLists[0];
-      actions.changeShoppingList(activeShoppingList._id);
+      actions.changeShoppingList(activeShoppingList);
     }
   }
 
@@ -74,10 +74,10 @@ class HomeScreen extends Component<Props, State> {
   }
 
   loadShoppingCartItems = async () => {
-    const {shoppingListId} = this.props;
+    const {shoppingList} = this.props;
     this.setState({loading: true})
-    if (shoppingListId) {
-      const {data: items} = await shoppingListService.getShoppingItems(shoppingListId);
+    if (shoppingList._id) {
+      const {data: items} = await shoppingListService.getShoppingItems(shoppingList._id);
       this.setState({ shoppingListItems: items, loading: false})
     } else {
       this.setState({ shoppingListItems: [], loading: false})
@@ -104,16 +104,16 @@ class HomeScreen extends Component<Props, State> {
   }
 
   addToShoppingList = (item) => {
-    const {shoppingListId} = this.props;
-    shoppingListService.addProduct(shoppingListId, item)
+    const {shoppingList} = this.props;
+    shoppingListService.addProduct(shoppingList._id, item)
       .then(() => {
         this.loadShoppingCartItems()
       });
   }
 
   removeFromShoppingList = (item) => {
-    const {shoppingListId} = this.props;
-    shoppingListService.removeItem(shoppingListId, item._id)
+    const {shoppingList} = this.props;
+    shoppingListService.removeItem(shoppingList._id, item._id)
       .then(this.loadShoppingCartItems);
   }
 
@@ -127,11 +127,11 @@ class HomeScreen extends Component<Props, State> {
 
   render() {
     const { search, loading, sections} = this.state;
-    const { products, shoppingListId, shoppingLists, user} = this.props;
+    const { products, shoppingList, user} = this.props;
     const shoppingCartItems = this.getShoppingCartItems();
     const productsFiltered = this.filterProducts(products);
     const selectedProducts =  _(shoppingCartItems).map((sc: any) => sc.product).uniq().value();
-    const currentShoppingList = shoppingLists.find(i => i._id === shoppingListId);
+    const currentShoppingList = shoppingList;
     const productsGrouped = [
       {data: shoppingCartItems, title: `Shopping List - "${currentShoppingList && currentShoppingList.name || ''}"`, key: 'shoppingList', show: sections.shoppingList}, 
       ..._(productsFiltered)
@@ -215,18 +215,19 @@ interface State {
   sections: any
 }
 interface Props {
-  shoppingListId: string,
+  shoppingList: {
+    _id: string,
+    name: string
+  },
   products: Array<any>
   actions: any,
   navigation: any
-  shoppingLists: Array<any>,
   user: string
 }
 
 const mapStateToProps = state => ({
   products: state.products.items,
-  shoppingListId: state.app.shoppingListId,
-  shoppingLists: state.shoppingLists.items,
+  shoppingList: state.app.shoppingList,
   user: state.app.user
 });
 

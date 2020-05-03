@@ -34,7 +34,7 @@ export class Login extends React.Component<Props, State>{
             const shoppingLists = await shoppingListService.query();
             const activeShoppingList = shoppingLists[0];
             await AsyncStorage.setItem(CURRENT_SHOPPING_LIST_ID, activeShoppingList._id);
-            actions.changeShoppingList(activeShoppingList._id);
+            actions.changeShoppingList(activeShoppingList);
           } else {
             actions.changeShoppingList(shoppingListId);
           }

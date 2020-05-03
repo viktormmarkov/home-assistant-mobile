@@ -41,7 +41,7 @@ class SettingsScreen extends React.Component<Props, State> {
         }}
         onLongPress={() => {
           if (p._id !== shoppingListId) {
-            actions.changeShoppingList(p._id);
+            actions.changeShoppingList(p);
           }
         }}
       />))
@@ -130,7 +130,7 @@ interface Props {
 
 const mapStateToProps = state => ({
   products: state.products.items,
-  shoppingListId: state.app.shoppingListId,
+  shoppingListId: state.app.shoppingList._id,
   shoppingLists: state.shoppingLists.items
 });
 

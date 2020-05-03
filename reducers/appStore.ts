@@ -1,7 +1,7 @@
 import { SHOPPING_LIST_CHANGED, USER_CHANGED} from '../constants';
 
 const initialState = {
-    shoppingListId: '',
+    shoppingList: '',
     user: ''
 };
 
@@ -10,7 +10,7 @@ const appStoreReducer = (state = initialState, action) => {
         case SHOPPING_LIST_CHANGED: 
             return {
                 ...state,
-                shoppingListId: action.payload
+                shoppingList: action.payload
             };
         case USER_CHANGED: 
             return {

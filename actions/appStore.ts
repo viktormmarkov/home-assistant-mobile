@@ -1,9 +1,9 @@
 import { SHOPPING_LIST_CHANGED, USER_CHANGED } from '../constants';
 
-export function changeShoppingList(shoppingListId: string) {
+export function changeShoppingList(shoppingList) {
     return {
         type: SHOPPING_LIST_CHANGED,
-        payload: shoppingListId
+        payload: shoppingList
     }
 };
 
