@@ -42,9 +42,11 @@ class PromotionsScreen extends React.Component<Props, State>{
       actions.loadPromotions(data);
       this.setState({loading: false })
     })
-    shoppingListService.getRelatedPromotions(shoppingListId).then((data) => {
-      actions.loadRelatedPromotions(data);
-    })
+    if (shoppingListId) {
+      shoppingListService.getRelatedPromotions(shoppingListId).then((data) => {
+        actions.loadRelatedPromotions(data);
+      })
+    }
   }
 
   updateSearch = (text) => {
@@ -110,7 +112,7 @@ interface Props {
 const mapStateToProps = state => ({
   promotions: state.promotions.items,
   related: state.promotions.related,
-  shoppingListId: state.app.shoppingListId,
+  shoppingListId: state.app.shoppingList._id,
 });
 
 const mapDispatchToProps = dispatch => ({
