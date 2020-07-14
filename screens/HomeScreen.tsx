@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { loadProducts } from '../actions/products';
 import { changeShoppingList, changeUser } from '../actions/appStore';
+import {shoppingListItemsLoaded} from '../actions/shoppingListItems';
 import ItemsGroup from '../components/ItemsGroup';
 import { translate } from '../l10n/translate'
 
@@ -25,7 +26,6 @@ class HomeScreen extends Component<Props, State> {
     super(props);
     this.state = {
       search: "",
-      shoppingListItems: [],
       loading: true,
       sections: {
         shoppingList: true
@@ -74,13 +74,14 @@ class HomeScreen extends Component<Props, State> {
   }
 
   loadShoppingCartItems = async () => {
-    const {shoppingList} = this.props;
+    const {shoppingList, actions} = this.props;
     this.setState({loading: true})
     if (shoppingList._id) {
       const {data: items} = await shoppingListService.getShoppingItems(shoppingList._id);
-      this.setState({ shoppingListItems: items, loading: false})
+      actions.shoppingListItemsLoaded(shoppingList._id, items);
+      this.setState({ loading: false})
     } else {
-      this.setState({ shoppingListItems: [], loading: false})
+      this.setState({ loading: false})
     }
     
   }
@@ -92,13 +93,13 @@ class HomeScreen extends Component<Props, State> {
   filterProducts = (products) => {
     return _(products)
       .filter(i => filterProducts(i, this.state.search))
-      .reject((i: any) => this.state.shoppingListItems.find((li: any) => li.product === i._id))
+      .reject((i: any) => this.props.shoppingListItems.find((li: any) => li.product === i._id))
       .sortBy('_id')
       .value();
   }
 
   getShoppingCartItems = () => {
-    return this.state.shoppingListItems
+    return this.props.shoppingListItems
       .filter(i => filterProducts(i, this.state.search))
       .sort((a: any, b: any) => a.id - b.id);
   }
@@ -210,7 +211,6 @@ class HomeScreen extends Component<Props, State> {
 
 interface State {
   search: string; 
-  shoppingListItems: [], 
   loading: boolean, 
   sections: any
 }
@@ -220,6 +220,7 @@ interface Props {
     name: string
   },
   products: Array<any>
+  shoppingListItems: [], 
   actions: any,
   navigation: any
   user: string
@@ -228,11 +229,12 @@ interface Props {
 const mapStateToProps = state => ({
   products: state.products.items,
   shoppingList: state.app.shoppingList,
+  shoppingListItems: state.shoppingListItems.items,
   user: state.app.user
 });
 
 const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators({loadProducts, changeShoppingList, changeUser}, dispatch),
+  actions: bindActionCreators({loadProducts, changeShoppingList, changeUser, shoppingListItemsLoaded}, dispatch),
 });
 
 

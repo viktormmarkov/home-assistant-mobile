@@ -13,11 +13,10 @@ import AuthLoadingScreen from "./screens/AuthLoadingScreen";
 import { Provider } from 'react-redux';
 import React, {Component} from 'react';
 import { translate } from './l10n/translate'
-import {primaryColor} from './styles/colors';
+import { primaryColor } from './styles/colors';
 
-import configureStore from './stores/configureStore';
+import store from './stores/configureStore';
 
-const store = configureStore();
 
 const HIDDEN_HEADER_OPTIONS = {
   headerMode: 'none',
