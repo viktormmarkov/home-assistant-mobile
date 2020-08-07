@@ -20,11 +20,13 @@ const rootReducer = combineReducers(
 );
 const epicMiddleware = createEpicMiddleware();
 const shoppingListItem = action$ => 
-    action$.pipe(ofType('SHOPPING_LIST_ITEMS_LOADED'),
-    mergeMap(action => 
-        from(shoppingListService.getRelatedPromotions(action.payload._id))
-            .pipe(map(response => ({type: 'RELATED_PROMOTIONS_LOADED', payload: response})))
-    ));
+    action$.pipe(
+        ofType('SHOPPING_LIST_ITEMS_LOADED'),
+        mergeMap(action => 
+            from(shoppingListService.getRelatedPromotions(action.payload._id))
+                .pipe(map(response => ({type: 'RELATED_PROMOTIONS_LOADED', payload: response})))
+        )
+);
 
 const rootEpic = combineEpics(shoppingListItem); 
 const rootStore = createStore(rootReducer, applyMiddleware(epicMiddleware));

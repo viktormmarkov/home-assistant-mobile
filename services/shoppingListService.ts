@@ -23,6 +23,15 @@ class ShoppingListService extends ServiceBase {
     getRelatedPromotions(id) {
       return this.api.get(`/${this.entity}/${id}/promotions`).then(res => res.data);
     }
+    getInterestedPromotions(id) {
+      return this.api.get(`/${this.entity}/${id}/interested-promotions`).then(res => res.data);
+    }
+    addPromotion(id, promotion) {
+      return this.api.put(`/${this.entity}/${id}/add-promotion`, promotion).then();
+    }
+    removePromotion(id, itemId) {
+      return this.api.delete(`/${this.entity}/${id}/promotions/${itemId}`);
+    }
 }
 
 export default new ShoppingListService();
