@@ -38,6 +38,12 @@ const styles = StyleSheet.create({
         height: 130,
         backgroundColor: '#c1c1c1'
     },
+    saved: {
+        backgroundColor: '#6aa52c'
+    },
+    related: {
+        backgroundColor: '#f8ad5b'
+    },
     itemContainer: {
         borderRadius: 4,
         height: 130,

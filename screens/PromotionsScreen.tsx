@@ -74,8 +74,6 @@ class PromotionsScreen extends React.Component<Props, State>{
   render() {
     const {promotions, related, saved, shoppingListId} = this.props;
     const {search, loading} = this.state;
-    // related = hide all that are added in interested
-    // 
     const sections = [
       {data: saved, title: 'Saved', key: 'saved', show: this.state.sections.saved},
       {data: related, title: 'Related', key: 'related', show: this.state.sections.related},
@@ -95,9 +93,10 @@ class PromotionsScreen extends React.Component<Props, State>{
                 <RefreshControl refreshing={loading} onRefresh={this.fetchPromotions} />
               }
               renderItem={(config, {item, section, index}) => {
+                const additionalStyle = styles[section.key];
                 return (
                   <TouchableOpacity onPress={() => config.tilePress(item, section, index)}>
-                    <View style={styles.squareContainer} key={item._id}>
+                    <View style={{...styles.squareContainer, ...additionalStyle}} key={item._id}>
                         <Text style={[styles.itemName]}>{item.name}</Text>
                         <Text style={[styles.itemName]}>{item.price && formatCurrency(item.price)}</Text>
                     </View>
