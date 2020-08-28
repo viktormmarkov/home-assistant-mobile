@@ -22,7 +22,12 @@ class PromotionsScreen extends React.Component<Props, State>{
     super(props);
     this.state = {
       search: "",
-      loading: false
+      loading: false,
+      sections: {
+        interested: true,
+        related: true,
+        all: true
+      }
     };
   }
 
@@ -44,8 +49,9 @@ class PromotionsScreen extends React.Component<Props, State>{
       this.setState({loading: false })
     })
     this.getRelatedPromotions();
-    this.getInterestedPromotions();
+    this.getSavedPromotions();
   }
+
   getRelatedPromotions = () => {
     const {actions, shoppingListId} = this.props;
     shoppingListService.getRelatedPromotions(shoppingListId)
@@ -53,9 +59,9 @@ class PromotionsScreen extends React.Component<Props, State>{
           actions.loadRelatedPromotions(data);
         });
   }
-  getInterestedPromotions = () => {
+  getSavedPromotions = () => {
     const {actions, shoppingListId} = this.props;
-    shoppingListService.getInterestedPromotions(shoppingListId)
+    shoppingListService.getSavedPromotions(shoppingListId)
         .then((data) => {
           actions.loadInterestedPromotions(data)
         })
@@ -68,10 +74,12 @@ class PromotionsScreen extends React.Component<Props, State>{
   render() {
     const {promotions, related, interested, shoppingListId} = this.props;
     const {search, loading} = this.state;
+    // related = hide all that are added in interested
+    // 
     const sections = [
-      {data: interested, title: 'Interested', key: 'interested', show: true},
-      {data: related, title: 'Related', key: 'related', show: true},
-      {data: promotions, title: 'All', key: 'all', show: true},
+      {data: interested, title: 'Interested', key: 'interested', show: this.state.sections.interested},
+      {data: related, title: 'Related', key: 'related', show: this.state.sections.related},
+      {data: promotions, title: 'All', key: 'all', show: this.state.sections.all},
     ];
     return (
       <SafeAreaView style={styles.safeAreaView}>
@@ -87,7 +95,6 @@ class PromotionsScreen extends React.Component<Props, State>{
                 <RefreshControl refreshing={loading} onRefresh={this.fetchPromotions} />
               }
               renderItem={(config, {item, section, index}) => {
-                const isSelected = config.isSelected(item);
                 return (
                   <TouchableOpacity onPress={() => config.tilePress(item, section, index)}>
                     <View style={styles.squareContainer} key={item._id}>
@@ -99,23 +106,24 @@ class PromotionsScreen extends React.Component<Props, State>{
               }}
               config={{
                 tilePress: (item, section, index) => {
-                  console.log(shoppingListId);
                   if (shoppingListId) {
                     if (section.key !== 'interested') {
                       shoppingListService.addPromotion(shoppingListId, item).then(() => {
-                        this.getInterestedPromotions();
+                        this.getSavedPromotions();
                       });
                     } else {
                       shoppingListService.removePromotion(shoppingListId, item._id).then(() => {
-                        this.getInterestedPromotions();
+                        this.getSavedPromotions();
                       });
                     }
                   }
                 },
-                isSelected: (item) => {
-                  return false;
-                },
-                headerPress: () => {}
+                headerPress: (item) => {
+                  const current = this.state.sections[item.section.key];
+                  this.setState({
+                    sections: {...this.state.sections, [item.section.key]: !current }
+                  }); 
+                }
               }}
             />
         </View>
@@ -126,7 +134,12 @@ class PromotionsScreen extends React.Component<Props, State>{
 
 interface State {
   search: string; 
-  loading: boolean, 
+  loading: boolean,
+  sections: {
+    interested: Boolean,
+    related: Boolean,
+    all: Boolean
+  }
 }
 interface Props {
   promotions: Array<any>,

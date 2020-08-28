@@ -20,11 +20,11 @@ class ShoppingListService extends ServiceBase {
     getUsers(id) {
       return this.api.get(`/${this.entity}/${id}/users`).then(res => res.data);
     }
-    getRelatedPromotions(id) {
+    getSavedPromotions(id) {
       return this.api.get(`/${this.entity}/${id}/promotions`).then(res => res.data);
     }
-    getInterestedPromotions(id) {
-      return this.api.get(`/${this.entity}/${id}/interested-promotions`).then(res => res.data);
+    getRelatedPromotions(id) {
+      return this.api.get(`/${this.entity}/${id}/related-promotions`).then(res => res.data);
     }
     addPromotion(id, promotion) {
       return this.api.put(`/${this.entity}/${id}/add-promotion`, promotion).then();
