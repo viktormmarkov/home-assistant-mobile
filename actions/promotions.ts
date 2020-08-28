@@ -1,4 +1,4 @@
-import { PROMOTIONS_LOADED, RELATED_PROMOTIONS_LOADED, INTERESTED_PROMOTIONS_LOADED} from '../constants';
+import { PROMOTIONS_LOADED, RELATED_PROMOTIONS_LOADED, SAVED_PROMOTIONS_LOADED} from '../constants';
 
 export function loadPromotions(promotions) {
     return {
@@ -14,9 +14,9 @@ export function loadRelatedPromotions(promotions) {
     }
 };
 
-export function loadInterestedPromotions(promotions) {
+export function loadSavedPromotions(promotions) {
     return {
-        type: INTERESTED_PROMOTIONS_LOADED,
+        type: SAVED_PROMOTIONS_LOADED,
         payload: promotions
     }
 };

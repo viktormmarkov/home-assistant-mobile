@@ -133,8 +133,11 @@ class HomeScreen extends Component<Props, State> {
     const productsFiltered = this.filterProducts(products);
     const selectedProducts =  _(shoppingCartItems).map((sc: any) => sc.product).uniq().value();
     const currentShoppingList = shoppingList;
-    const productsGrouped = [
-      {data: shoppingCartItems, title: `Shopping List - "${currentShoppingList && currentShoppingList.name || ''}"`, key: 'shoppingList', show: sections.shoppingList}, 
+    const productsGrouped = [{
+      data: shoppingCartItems, 
+      title: `Shopping List - "${currentShoppingList && currentShoppingList.name || ''}"`, 
+      key: 'shoppingList', 
+      show: sections.shoppingList}, 
       ..._(productsFiltered)
         .groupBy('mainCategoryName')
         .map((grouped, key) => ({data: grouped, key, title: key, show: sections[key]}))

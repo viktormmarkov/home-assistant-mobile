@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-navigation'
 import { SearchBar } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { loadPromotions, loadRelatedPromotions, loadInterestedPromotions} from '../actions/promotions';
+import { loadPromotions, loadRelatedPromotions, loadSavedPromotions} from '../actions/promotions';
 import promotionsService from '../services/promotionsService';
 import shoppingListService from '../services/shoppingListService';
 import ItemsGroup from '../components/ItemsGroup';
@@ -24,7 +24,7 @@ class PromotionsScreen extends React.Component<Props, State>{
       search: "",
       loading: false,
       sections: {
-        interested: true,
+        saved: true,
         related: true,
         all: true
       }
@@ -63,7 +63,7 @@ class PromotionsScreen extends React.Component<Props, State>{
     const {actions, shoppingListId} = this.props;
     shoppingListService.getSavedPromotions(shoppingListId)
         .then((data) => {
-          actions.loadInterestedPromotions(data)
+          actions.loadSavedPromotions(data)
         })
     }
 
@@ -72,12 +72,12 @@ class PromotionsScreen extends React.Component<Props, State>{
   };
 
   render() {
-    const {promotions, related, interested, shoppingListId} = this.props;
+    const {promotions, related, saved, shoppingListId} = this.props;
     const {search, loading} = this.state;
     // related = hide all that are added in interested
     // 
     const sections = [
-      {data: interested, title: 'Interested', key: 'interested', show: this.state.sections.interested},
+      {data: saved, title: 'Saved', key: 'saved', show: this.state.sections.saved},
       {data: related, title: 'Related', key: 'related', show: this.state.sections.related},
       {data: promotions, title: 'All', key: 'all', show: this.state.sections.all},
     ];
@@ -107,7 +107,7 @@ class PromotionsScreen extends React.Component<Props, State>{
               config={{
                 tilePress: (item, section, index) => {
                   if (shoppingListId) {
-                    if (section.key !== 'interested') {
+                    if (section.key !== 'saved') {
                       shoppingListService.addPromotion(shoppingListId, item).then(() => {
                         this.getSavedPromotions();
                       });
@@ -136,14 +136,14 @@ interface State {
   search: string; 
   loading: boolean,
   sections: {
-    interested: Boolean,
+    saved: Boolean,
     related: Boolean,
     all: Boolean
   }
 }
 interface Props {
   promotions: Array<any>,
-  interested: Array<any>
+  saved: Array<any>
   related: Array<any>
   actions: any,
   navigation: any
@@ -154,7 +154,7 @@ interface Props {
 const mapStateToProps = state => ({
   promotions: state.promotions.items,
   related: state.promotions.related,
-  interested: state.promotions.interested,
+  saved: state.promotions.saved,
   shoppingListId: state.app.shoppingList._id,
 });
 
@@ -162,7 +162,7 @@ const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     loadPromotions, 
     loadRelatedPromotions,
-    loadInterestedPromotions
+    loadSavedPromotions
   }, dispatch),
 });
 
