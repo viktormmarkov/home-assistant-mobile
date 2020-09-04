@@ -3,7 +3,6 @@ import _ from 'lodash';
 import { AsyncStorage, ScrollView, View, Animated, Easing} from "react-native";
 import { Input, Button, Text } from 'react-native-elements';
 import shoppingListService from '../services/shoppingListService';
-import {SafeAreaView} from 'react-navigation'
 import styles from '../styles/base';
 import { ListItem } from 'react-native-elements';
 import { connect } from 'react-redux';
@@ -114,7 +113,7 @@ export class ShoppingListScreen extends React.Component<Props, State> {
     const safeAreaStyle = {...styles.container, ...styles.column}
     const {shoppingList, inviteUser} = this.state;
     return (
-      <SafeAreaView style={safeAreaStyle}>  
+      <View style={safeAreaStyle}>  
         <View style={styles.cardHeader}>
           <View style={{flex: 0.9}}>
 
@@ -177,7 +176,7 @@ export class ShoppingListScreen extends React.Component<Props, State> {
             {!inviteUser && this.getUsers()}
           </ScrollView>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 }

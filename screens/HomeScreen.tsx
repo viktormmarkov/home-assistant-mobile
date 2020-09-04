@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import _ from 'lodash';
 import { View, RefreshControl, AsyncStorage} from 'react-native';
 import { SearchBar } from 'react-native-elements';
-import {SafeAreaView} from 'react-navigation'
 import productsService from '../services/productsService';
 import shoppingListService from '../services/shoppingListService';
 import styles from '../styles/base';
@@ -140,12 +139,11 @@ class HomeScreen extends Component<Props, State> {
       show: sections.shoppingList}, 
       ..._(productsFiltered)
         .groupBy('mainCategoryName')
-        .map((grouped, key) => ({data: grouped, key, title: key, show: sections[key]}))
+        .map((grouped, key) => ({data: grouped, key, title: translate(key), show: sections[key]}))
         .value()
     ];
     return (
-      <SafeAreaView style={styles.safeAreaView}>
-        <View style={{...styles.container}}>
+      <View style={{...styles.container}}>
           <SearchBar style={styles.searchbar}
             placeholder="Type Here..."
             onChangeText={this.updateSearch}
@@ -207,7 +205,6 @@ class HomeScreen extends Component<Props, State> {
             ></ItemsGroup>
           }
         </View>
-      </SafeAreaView>
     );
   }
 }

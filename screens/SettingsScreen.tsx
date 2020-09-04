@@ -2,7 +2,6 @@ import React from 'react';
 import _ from 'lodash';
 import { ScrollView, View, AsyncStorage} from 'react-native';
 import { ListItem, Input, Button} from 'react-native-elements';
-import {SafeAreaView} from 'react-navigation'
 import styles from '../styles/base';
 
 import authenticationService from '../services/authenticationService';
@@ -60,8 +59,7 @@ class SettingsScreen extends React.Component<Props, State> {
     const { navigate } = this.props.navigation;
     const {addShoppingList} = this.state;
     return (
-      <SafeAreaView style={styles.safeAreaView}>
-        <View style={styles.container}>
+        <View style={{...styles.container, ...styles.column}}>
           <ScrollView>
             {this.getShoppingLists()}
             {!addShoppingList ? <ListItem 
@@ -112,7 +110,6 @@ class SettingsScreen extends React.Component<Props, State> {
             }}
           />
         </View>
-      </SafeAreaView>
     );
   }
 }

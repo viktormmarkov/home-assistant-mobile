@@ -1,7 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
 import { RefreshControl, View, Text} from 'react-native';
-import { SafeAreaView } from 'react-navigation'
 import { SearchBar } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -80,8 +79,7 @@ class PromotionsScreen extends React.Component<Props, State>{
       {data: promotions, title: 'All', key: 'all', show: this.state.sections.all},
     ];
     return (
-      <SafeAreaView style={styles.safeAreaView}>
-        <View style={styles.container}>
+      <View style={styles.container}>
           <SearchBar style={styles.searchbar}
             placeholder="Type Here..."
             onChangeText={this.updateSearch}
@@ -125,8 +123,7 @@ class PromotionsScreen extends React.Component<Props, State>{
                 }
               }}
             />
-        </View>
-      </SafeAreaView>
+      </View>
     );
   }
 }

@@ -1,4 +1,4 @@
-import { createAppContainer, createSwitchNavigator } from "react-navigation";
+import { createAppContainer, createSwitchNavigator, SafeAreaView} from "react-navigation";
 import { createStackNavigator } from 'react-navigation-stack';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import i18n from "i18n-js";
@@ -14,6 +14,7 @@ import { Provider } from 'react-redux';
 import React, {Component} from 'react';
 import { translate } from './l10n/translate'
 import { primaryColor } from './styles/colors';
+import styles from './styles/base';
 
 import store from './stores/configureStore';
 
@@ -103,7 +104,9 @@ export default class App extends Component {
   render() {
     return (
       <Provider store={store}>
+        <SafeAreaView style={styles.safeAreaView}>
           <AppNavigation />
+        </SafeAreaView>
       </Provider>
     );
   }
