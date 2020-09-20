@@ -7,6 +7,7 @@ import { bindActionCreators } from 'redux';
 import { loadPromotions, loadRelatedPromotions, loadSavedPromotions} from '../actions/promotions';
 import promotionsService from '../services/promotionsService';
 import shoppingListService from '../services/shoppingListService';
+import shopService from '../services/shopService';
 import ItemsGroup from '../components/ItemsGroup';
 import styles from '../styles/base';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -22,6 +23,7 @@ class PromotionsScreen extends React.Component<Props, State>{
     this.state = {
       search: "",
       loading: false,
+      shops: {},
       sections: {
         saved: true,
         related: true,
@@ -46,6 +48,11 @@ class PromotionsScreen extends React.Component<Props, State>{
     promotionsService.query().then((data) => {
       actions.loadPromotions(data);
       this.setState({loading: false })
+    });
+    shopService.query().then((shops) => {
+      const grouped = _.keyBy(shops, '_id');
+      console.log(grouped);
+      this.setState({shops: grouped});
     })
     this.getRelatedPromotions();
     this.getSavedPromotions();
@@ -72,7 +79,7 @@ class PromotionsScreen extends React.Component<Props, State>{
 
   render() {
     const {promotions, related, saved, shoppingListId} = this.props;
-    const {search, loading} = this.state;
+    const {search, loading, shops} = this.state;
     const sections = [
       {data: saved, title: 'Saved', key: 'saved', show: this.state.sections.saved},
       {data: related, title: 'Related', key: 'related', show: this.state.sections.related},
@@ -92,11 +99,13 @@ class PromotionsScreen extends React.Component<Props, State>{
               }
               renderItem={(config, {item, section, index}) => {
                 const additionalStyle = styles[section.key];
+                const shop = shops && shops[item && item.shop];
                 return (
                   <TouchableOpacity onPress={() => config.tilePress(item, section, index)}>
                     <View style={{...styles.squareContainer, ...additionalStyle}} key={item._id}>
                         <Text style={[styles.itemName]}>{item.name}</Text>
                         <Text style={[styles.itemName]}>{item.price && formatCurrency(item.price)}</Text>
+                        <Text style={[styles.itemName]}>{shop && shop.name}</Text>
                     </View>
                   </TouchableOpacity>
                 )
@@ -135,7 +144,8 @@ interface State {
     saved: Boolean,
     related: Boolean,
     all: Boolean
-  }
+  },
+  shops: {}
 }
 interface Props {
   promotions: Array<any>,
