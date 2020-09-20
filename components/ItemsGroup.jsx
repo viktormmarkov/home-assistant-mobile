@@ -50,14 +50,14 @@ export default class ItemsGroup extends React.Component {
                       justifyContent: 'space-between',
                       backgroundColor: '#636e72',
                     }} onPress={()=>{config.headerPress(item)}} >
-                    <Text style={styles.sectionHeader}>{item.section.title}</Text>
-                    <Icon 
-                    name={icon}
-                    color="#ffffff"
-                    containerStyle={{
-                      padding: 5
-                    }}
-                    >
+                      <Text style={styles.sectionHeader}>{item.section.title}</Text>
+                      <Icon 
+                        name={icon}
+                        color="#ffffff"
+                        containerStyle={{
+                          padding: 5
+                        }}
+                      >
                      </Icon>
                     </TouchableOpacity>
                   );
