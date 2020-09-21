@@ -78,11 +78,11 @@ class PromotionsScreen extends React.Component<Props, State>{
   };
 
   render() {
-    const {promotions, related, saved, shoppingListId} = this.props;
+    const {promotions, related, saved, shoppingListId, shoppingListName} = this.props;
     const {search, loading, shops} = this.state;
     const sections = [
       {data: saved, title: 'Saved', key: 'saved', show: this.state.sections.saved},
-      {data: related, title: 'Related', key: 'related', show: this.state.sections.related},
+      {data: related, title: `Related based on "${shoppingListName}"`, key: 'related', show: this.state.sections.related},
       {data: promotions, title: 'All', key: 'all', show: this.state.sections.all},
     ];
     return (
@@ -155,6 +155,7 @@ interface Props {
   navigation: any
   shoppingLists: Array<any>
   shoppingListId: string
+  shoppingListName: string
 }
 
 const mapStateToProps = state => ({
@@ -162,6 +163,7 @@ const mapStateToProps = state => ({
   related: state.promotions.related,
   saved: state.promotions.saved,
   shoppingListId: state.app.shoppingList._id,
+  shoppingListName: state.app.shoppingList.name,
 });
 
 const mapDispatchToProps = dispatch => ({
