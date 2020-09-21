@@ -45,14 +45,13 @@ class PromotionsScreen extends React.Component<Props, State>{
   fetchPromotions = () => {
     const {actions} = this.props;
     this.setState({loading: true});
-    promotionsService.query().then((data) => {
+    promotionsService.query({status: "active"}).then((data) => {
       actions.loadPromotions(data);
       this.setState({loading: false })
     });
     shopService.query().then((shops) => {
-      const grouped = _.keyBy(shops, '_id');
-      console.log(grouped);
-      this.setState({shops: grouped});
+      const shopsById = _.keyBy(shops, '_id');
+      this.setState({shops: shopsById});
     })
     this.getRelatedPromotions();
     this.getSavedPromotions();
