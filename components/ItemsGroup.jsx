@@ -2,7 +2,7 @@ import * as _ from 'lodash'
 import React from 'react';
 import { Text, View} from 'react-native';
 import { Icon} from 'react-native-elements';
-import { SectionGrid, FlatGrid,  } from 'react-native-super-grid';
+import { FlatGrid } from 'react-native-super-grid';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import styles from '../styles/base';
 import {translate} from '../l10n/translate'

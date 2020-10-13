@@ -17,7 +17,7 @@ import { primaryColor } from './styles/colors';
 import styles from './styles/base';
 
 import store from './stores/configureStore';
-
+import apiBase from "./services/apiBase";
 
 const HIDDEN_HEADER_OPTIONS = {
   headerMode: 'none',
@@ -48,7 +48,6 @@ HomeScreen.navigationOptions = {
   ...defaultTabBarOptions,
   tabBarLabel: "Home",
   tabBarIcon: (options) => getIcon(options, "list")
-
 };
 
 PromotionsScreen.navigationOptions = {
@@ -65,7 +64,9 @@ SettingsStack.navigationOptions = {
 }
 
 const AppStack = createBottomTabNavigator({
-   Home: HomeScreen, Promotions: PromotionsScreen, Settings: SettingsStack,
+   Home: HomeScreen, 
+   Promotions: PromotionsScreen, 
+   Settings: SettingsStack,
   });
 
 const MainNavigator = createSwitchNavigator(
@@ -79,20 +80,34 @@ const MainNavigator = createSwitchNavigator(
 
 const AppNavigation = createAppContainer(MainNavigator);
 
-const translationGetters = {
-  // lazy requires (metro bundler does not support symlinks)
-  bg: () => require("./l10n/bg.json"),
-};
+const fetchLocale = (language) => apiBase.get('/locales').then(({data = []}) => {
+  const bg = data.find(l => l.language === language);
+  return bg.translations;
+});
+
+// check cached locale 
+// fetch locale
+// if not existing return default
+// load locale
+
+const updateLabels = () => {
+  HomeScreen.navigationOptions.tabBarLabel = translate("Home");
+  PromotionsScreen.navigationOptions.tabBarLabel = translate("Promotions");
+  SettingsStack.navigationOptions.tabBarLabel = translate("Settings");
+}
 
 const setI18nConfig = () => {
-  const fallback = { languageTag: "bg", isRTL: false };
+  fetchLocale('bulgarian').then(translations => {
+    const fallback = { languageTag: "bg", isRTL: false };
 
-  const { languageTag } = fallback;
-
-  translate.cache.clear();
-  i18n.translations = { [languageTag]: translationGetters[languageTag]() };
-  i18n.locale = languageTag;
-  i18n.missingTranslation = function (key) { return `${key}*`; };
+    const { languageTag } = fallback;
+  
+    translate.cache.clear();
+    i18n.translations = { [languageTag]: translations };
+    i18n.locale = languageTag;
+    i18n.missingTranslation = function (key) { return `${key}*`; };
+    updateLabels();
+  })
 };
 
 export default class App extends Component {
