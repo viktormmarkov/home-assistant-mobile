@@ -4,7 +4,6 @@ import { AsyncStorage, ScrollView, View, Animated, Easing} from "react-native";
 import { Input, Button, Text } from 'react-native-elements';
 import userService from '../services/userService';
 import styles from '../styles/base';
-import { ListItem } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { changeUser } from '../actions/appStore';
