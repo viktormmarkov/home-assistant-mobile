@@ -23,7 +23,7 @@ class ServiceBase {
             .then(res => res.data);
     }
     getItem(id) {
-        return this.api.get(`/${this.entity}/${id}`);
+        return this.api.get(`/${this.entity}/${id}`).then(res => res.data);
     }
     addItem(item) {
         return this.api.post(`/${this.entity}`, [item]);

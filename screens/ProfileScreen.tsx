@@ -1,17 +1,27 @@
 import React from 'react';
 import _ from 'lodash';
-import { ScrollView, View, AsyncStorage} from 'react-native';
-import { ListItem, Input, Button} from 'react-native-elements';
+import { View, Text } from 'react-native';
+import { ListItem, Input, Button, Avatar} from 'react-native-elements';
 import styles from '../styles/base';
 
-import authenticationService from '../services/authenticationService';
 import shoppingListService from '../services/shoppingListService';
 import { connect } from 'react-redux';
 import { changeShoppingList } from '../actions/appStore';
 import { loadShoppingItems } from '../actions/shoppingLists';
 import { bindActionCreators } from 'redux';
+import { translate } from '../l10n/translate'
+import { ScrollView } from 'react-native-gesture-handler';
 
-class SettingsScreen extends React.Component<Props, State> {
+class ProfileScreen extends React.Component<Props, State> {
+  static navigationOptions = () => {
+    return {
+      headerTitle: translate('Profile'),
+      headerStyle: {
+        backgroundColor: '#5CA666',
+      },
+      headerTintColor: '#fff',
+    }
+  }
   state: State;
   constructor(props) {
     super(props);
@@ -20,6 +30,7 @@ class SettingsScreen extends React.Component<Props, State> {
       name: ''
     }
   }
+
   componentDidMount() {
     const { actions } = this.props;
     shoppingListService.query().then(data => {
@@ -45,6 +56,7 @@ class SettingsScreen extends React.Component<Props, State> {
         }}
       />))
   }
+
   add = () => {
     return shoppingListService.addItem({name: this.state.name})
       .then(() => {}, (err) => {console.log(err)})
@@ -52,19 +64,38 @@ class SettingsScreen extends React.Component<Props, State> {
         this.setState({addShoppingList: false});
       });
   }
+
   cancel = () => {
     this.setState({name: '', addShoppingList: false});
   }
+
   render() {
     const { navigate } = this.props.navigation;
-    const {addShoppingList} = this.state;
+    const { addShoppingList } = this.state;
     return (
-        <View style={{...styles.container, ...styles.column}}>
-          <ScrollView>
+        <ScrollView style={styles.container}>
+          <Text style={{fontSize: 24, paddingHorizontal: 15, paddingVertical: 10}}>Hello, User</Text>
+          <View style={{alignItems: 'center', paddingVertical:15}}>
+          <Avatar
+            size="xlarge"
+            rounded
+            source={{
+              uri:
+                'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
+            }}
+          />
+          </View>
+
+          <ListItem 
+            key={'shopping-list-head'}
+            title={translate('Shopping Lists')}
+            bottomDivider
+          />
+          <View style={{padding: 15, flex: 1}}>
             {this.getShoppingLists()}
             {!addShoppingList ? <ListItem 
               key={'add'}
-              title={'Add Shopping List'}
+              title={translate('Add Shopping List')}
               bottomDivider
               leftIcon={{name: 'add'}}
               onPress={() => {
@@ -98,18 +129,15 @@ class SettingsScreen extends React.Component<Props, State> {
               </View>
                </React.Fragment> : null
               }
-          </ScrollView>
+          </View>
+
           <Button
-            title="Sign Out"
-            onPress={async () => {
-              await authenticationService.logout().then(res => {
-                navigate('AuthLoading')
-              }, err => {
-                navigate('AuthLoading')
-              })
+            title="Edit Details"
+            onPress={() => {
+              navigate('ProfileDetails');
             }}
           />
-        </View>
+        </ScrollView>
     );
   }
 }
@@ -135,4 +163,4 @@ const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({changeShoppingList, loadShoppingItems}, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(SettingsScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileScreen);

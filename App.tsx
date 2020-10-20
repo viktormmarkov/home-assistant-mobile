@@ -6,7 +6,7 @@ import { Icon } from 'react-native-elements';
 
 import HomeScreen from "./screens/HomeScreen";
 import PromotionsScreen from "./screens/PromotionsScreen";
-import SettingsScreen from "./screens/SettingsScreen";
+import ProfileScreen from "./screens/ProfileScreen";
 import LoginScreen from "./screens/LoginScreen";
 import ShoppingListScreen from "./screens/ShoppingListScreen";
 import AuthLoadingScreen from "./screens/AuthLoadingScreen";
@@ -18,6 +18,7 @@ import styles from './styles/base';
 
 import store from './stores/configureStore';
 import apiBase from "./services/apiBase";
+import { ProfileDetailsScreen } from "./screens/ProfileDetailsScreen";
 
 const HIDDEN_HEADER_OPTIONS = {
   headerMode: 'none',
@@ -27,7 +28,7 @@ const HIDDEN_HEADER_OPTIONS = {
 };
 
 const AuthStack = createStackNavigator({ LoginScreen: LoginScreen }, {...HIDDEN_HEADER_OPTIONS});
-const SettingsStack = createStackNavigator({ Settings: SettingsScreen, ShoppingList: ShoppingListScreen});
+const ProfileStack = createStackNavigator({ Profile: ProfileScreen, ProfileDetails: ProfileDetailsScreen, ShoppingList: ShoppingListScreen});
 
 const defaultTabBarOptions = {
   tabBarOptions: {
@@ -57,16 +58,16 @@ PromotionsScreen.navigationOptions = {
 }
 
 
-SettingsStack.navigationOptions = {
+ProfileStack.navigationOptions = {
   ...defaultTabBarOptions,
-  tabBarLabel: "Settings",
-  tabBarIcon: (options) => getIcon(options, "settings")
+  tabBarLabel: "Profile",
+  tabBarIcon: (options) => getIcon(options, "person")
 }
 
 const AppStack = createBottomTabNavigator({
    Home: HomeScreen, 
    Promotions: PromotionsScreen, 
-   Settings: SettingsStack,
+   Settings: ProfileStack,
   });
 
 const MainNavigator = createSwitchNavigator(
@@ -93,7 +94,7 @@ const fetchLocale = (language) => apiBase.get('/locales').then(({data = []}) => 
 const updateLabels = () => {
   HomeScreen.navigationOptions.tabBarLabel = translate("Home");
   PromotionsScreen.navigationOptions.tabBarLabel = translate("Promotions");
-  SettingsStack.navigationOptions.tabBarLabel = translate("Settings");
+  ProfileStack.navigationOptions.tabBarLabel = translate("Profile");
 }
 
 const setI18nConfig = () => {

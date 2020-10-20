@@ -107,6 +107,7 @@ class HomeScreen extends Component<Props, State> {
     const {shoppingList} = this.props;
     shoppingListService.addProduct(shoppingList._id, item)
       .then(() => {
+        // get the saved items from the response and do not make another call to the server 
         this.loadShoppingCartItems()
       });
   }
