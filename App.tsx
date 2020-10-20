@@ -3,6 +3,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import i18n from "i18n-js";
 import { Icon } from 'react-native-elements';
+import { StatusBar } from 'react-native';
 
 import HomeScreen from "./screens/HomeScreen";
 import PromotionsScreen from "./screens/PromotionsScreen";
@@ -120,6 +121,7 @@ export default class App extends Component {
   render() {
     return (
       <Provider store={store}>
+        <StatusBar barStyle="light-content"  backgroundColor={primaryColor}/>
         <SafeAreaView style={styles.safeAreaView}>
           <AppNavigation />
         </SafeAreaView>
