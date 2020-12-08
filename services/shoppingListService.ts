@@ -27,7 +27,7 @@ class ShoppingListService extends ServiceBase {
       return this.api.get(`/${this.entity}/${id}/related-promotions`).then(res => res.data);
     }
     addPromotion(id, promotion) {
-      return this.api.put(`/${this.entity}/${id}/add-promotion`, promotion).then();
+      return this.api.put(`/${this.entity}/${id}/add-promotion`, promotion).then(res => res.data);
     }
     removePromotion(id, itemId) {
       return this.api.delete(`/${this.entity}/${id}/promotions/${itemId}`);
