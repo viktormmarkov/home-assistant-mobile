@@ -74,16 +74,24 @@ class ProfileScreen extends React.Component<Props, State> {
     const { addShoppingList } = this.state;
     return (
         <ScrollView style={styles.container}>
-          <Text style={{fontSize: 24, paddingHorizontal: 15, paddingVertical: 10}}>Hello, User</Text>
-          <View style={{alignItems: 'center', paddingVertical:15}}>
-          <Avatar
-            size="xlarge"
-            rounded
-            source={{
-              uri:
-                'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-            }}
+          <View style={{ alignItems: 'center', paddingHorizontal: 15, paddingVertical: 10, flexDirection: 'row', justifyContent: 'space-between',}}> 
+            <Text style={{fontSize: 24}}>Hello, User</Text>
+            <Button
+              type="outline"
+              title="Edit Details"
+              onPress={() => navigate('ProfileDetails')}
           />
+          </View>
+          <View style={{alignItems: 'center', paddingVertical:15}}>
+            <Avatar
+              size="xlarge"
+              containerStyle={{borderColor: 'white', borderWidth: 4}}
+              rounded
+              source={{
+                uri:
+                  'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
+              }}
+            />
           </View>
 
           <ListItem 
@@ -130,13 +138,6 @@ class ProfileScreen extends React.Component<Props, State> {
                </React.Fragment> : null
               }
           </View>
-
-          <Button
-            title="Edit Details"
-            onPress={() => {
-              navigate('ProfileDetails');
-            }}
-          />
         </ScrollView>
     );
   }
