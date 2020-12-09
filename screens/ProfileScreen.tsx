@@ -89,7 +89,6 @@ class ProfileScreen extends React.Component<Props, State> {
     const { navigate } = this.props.navigation;
     const { addShoppingList } = this.state;
     const { profile } = this.props;
-
     return (
       <ScrollView style={styles.container}>
         <View
