@@ -11,6 +11,7 @@ import { bindActionCreators } from "redux";
 import { translate } from "../l10n/translate";
 import { ScrollView } from "react-native-gesture-handler";
 import { InlineListInput } from "../components/InlineListInput";
+import userService from "../services/userService";
 class ProfileScreen extends React.Component<Props, State> {
   static navigationOptions = () => {
     return {
@@ -38,8 +39,16 @@ class ProfileScreen extends React.Component<Props, State> {
     });
   }
 
+  fetchUserData = () => {
+    const {actions} = this.props;
+    userService.getProfile().then(data => {
+      actions.loadProfile(data);
+    });
+  }
+
   componentDidMount() {
     this.fetchShoppinglists();
+    this.fetchUserData();
   }
 
   getShoppingLists = () => {
@@ -79,6 +88,8 @@ class ProfileScreen extends React.Component<Props, State> {
   render() {
     const { navigate } = this.props.navigation;
     const { addShoppingList } = this.state;
+    const { profile } = this.props;
+
     return (
       <ScrollView style={styles.container}>
         <View
@@ -90,7 +101,7 @@ class ProfileScreen extends React.Component<Props, State> {
             justifyContent: "space-between",
           }}
         >
-          <Text style={{ fontSize: 24 }}>Hello, User</Text>
+          <Text style={{ fontSize: 24 }}>Hello, {profile && profile.name }</Text>
           <Button
             type="outline"
             title={translate("Edit Details")}
@@ -152,17 +163,19 @@ interface Props {
   actions: any;
   navigation: any;
   shoppingLists: Array<any>;
+  profile: any
 }
 
 const mapStateToProps = (state) => ({
   products: state.products.items,
   shoppingListId: state.app.shoppingList._id,
   shoppingLists: state.shoppingLists.items,
+  profile: state.userProfile
 });
 
 const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators(
-    { changeShoppingList, loadShoppingItems },
+    { changeShoppingList, loadShoppingItems, loadProfile: (data) => ({type: 'PROFILE_LOADED', payload: data})},
     dispatch
   ),
 });
