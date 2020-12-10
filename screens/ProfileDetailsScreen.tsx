@@ -1,12 +1,11 @@
 import React from "react";
 import _ from "lodash";
 import { AsyncStorage, View } from "react-native";
-import { Input, Text, Avatar, Button, Icon } from "react-native-elements";
+import { Avatar, Button } from "react-native-elements";
 import userService from "../services/userService";
 import styles from "../styles/base";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { FormInput } from "../components/FormInput";
 export class ProfileDetailsScreen extends React.Component<Props, State> {
   static navigationOptions = (options) => {
@@ -16,8 +15,9 @@ export class ProfileDetailsScreen extends React.Component<Props, State> {
       headerStyle: {
         backgroundColor: "#5CA666",
       },
-      headerRight: params && params.headerRight,
+      headerLeft: params && params.headerLeft,
       headerTintColor: "#fff",
+      headerTitle: ''
     };
   };
 
@@ -32,30 +32,8 @@ export class ProfileDetailsScreen extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    this.setHeader();
     this.getUserDetails();
   }
-
-  setHeader = () => {
-    this.props.navigation.setParams({
-      headerLeft: (
-        <TouchableOpacity
-          onPress={() => {
-            this.props.navigation.pop();
-          }}
-        >
-          <Text
-            style={{
-              color: "white",
-              padding: 15,
-            }}
-          >
-            Back To Profile
-          </Text>
-        </TouchableOpacity>
-      ),
-    });
-  };
 
   getUserDetails = () => {
     const { actions } = this.props;

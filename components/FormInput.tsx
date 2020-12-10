@@ -18,8 +18,7 @@ export class FormInput extends React.Component {
 
         <Input
           labelStyle={{
-            fontWeight: "400",
-            color: "gray",
+            fontWeight: "200", color: "#010101",
           }}
           inputContainerStyle={{
             borderBottomWidth: 0,
