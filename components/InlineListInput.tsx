@@ -5,7 +5,7 @@ import { View } from "react-native";
 export class InlineListInput extends React.Component {
   render() {
     return (
-      <React.Fragment>
+      <>
         <Input
           containerStyle={{
             backgroundColor: "white",
@@ -35,9 +35,8 @@ export class InlineListInput extends React.Component {
             onPress={this.props.confirm}
           />
         </View>
-      </React.Fragment>
+      </>
     );
   }
 }
 
-InlineListInput;

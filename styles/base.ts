@@ -12,6 +12,12 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'flex-start',
     },
+    columnContainer: {
+        flex: 1,
+        backgroundColor: '#F2F2F2',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+    },
     safeAreaView: {
         flex: 1,
         backgroundColor: '#c1c1c1',

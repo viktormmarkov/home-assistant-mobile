@@ -20,7 +20,7 @@ import styles from './styles/base';
 
 import store from './stores/configureStore';
 import apiBase from "./services/apiBase";
-import { ProfileDetailsScreen } from "./screens/ProfileDetailsScreen";
+import ProfileDetailsScreen from "./screens/ProfileDetailsScreen";
 
 const HIDDEN_HEADER_OPTIONS = {
   headerMode: 'none',
