@@ -10,10 +10,10 @@ import { loadShoppingItems } from "../actions/shoppingLists";
 import { bindActionCreators } from "redux";
 import { translate } from "../l10n/translate";
 import { ScrollView } from "react-native-gesture-handler";
-import { InlineListInput } from "../components/InlineListInput";
 import { ListHeader } from "../components/ListHeader";
 import userService from "../services/userService";
-import { ListFooter } from "../components/ListFooter";
+import { primaryColor } from "../styles/colors";
+import { AddListItem } from "../components/AddListitem";
 
 class ProfileScreen extends React.Component<Props, State> {
   static navigationOptions = () => {
@@ -25,15 +25,6 @@ class ProfileScreen extends React.Component<Props, State> {
       headerTintColor: "#fff",
     };
   };
-  state: State;
-  constructor(props) {
-    super(props);
-    this.state = {
-      addShoppingList: false,
-      name: "",
-    };
-  }
-
   fetchShoppinglists = () => {
     const { actions } = this.props;
 
@@ -62,7 +53,7 @@ class ProfileScreen extends React.Component<Props, State> {
         key={i}
         title={`${p.name}`}
         bottomDivider
-        rightIcon={{ name: p._id === shoppingListId ? "stars" : null }}
+        rightIcon={{ name: p._id === shoppingListId ? "stars" : null, color: primaryColor}}
         onPress={() => {
           navigate("ShoppingList", p);
         }}
@@ -75,22 +66,14 @@ class ProfileScreen extends React.Component<Props, State> {
     ));
   };
 
-  add = () => {
+  add = (newListName) => {
     return shoppingListService
-      .addItem({ name: this.state.name })
+      .addItem({ name: newListName })
       .then(this.fetchShoppinglists)
-      .finally(() => {
-        this.setState({ addShoppingList: false });
-      });
-  };
-
-  cancel = () => {
-    this.setState({ name: "", addShoppingList: false });
   };
 
   render() {
     const { navigate } = this.props.navigation;
-    const { addShoppingList } = this.state;
     const { profile } = this.props;
     return (
       <ScrollView style={styles.container}>
@@ -130,23 +113,12 @@ class ProfileScreen extends React.Component<Props, State> {
             iconName={"list"}
           />
           {this.getShoppingLists()}
-          {!addShoppingList ? (
-            <ListFooter
-              title={translate("Add Shopping List")}
-              iconName="plus"
-              onPress={() => {this.setState({ addShoppingList: true });}}
-            />
-          ) : null}
-          {addShoppingList ? (
-            <InlineListInput
-              onChangeText={(name) => this.setState({ name })}
-              value={this.state.name}
-              label="Shopping List Name"
-              autoCapitalize="none"
-              confirm={this.add}
-              cancel={this.cancel}
-            />
-          ) : null}
+          <AddListItem
+            addTitle={translate("Add Shopping List")}
+            newItemLabel="Shopping List Name"
+            add={this.add}
+          >
+          </AddListItem>
         </View>
       </ScrollView>
     );
@@ -154,9 +126,8 @@ class ProfileScreen extends React.Component<Props, State> {
 }
 
 interface State {
-  addShoppingList: boolean;
-  name: string;
 }
+
 interface Props {
   shoppingListId: string;
   actions: any;

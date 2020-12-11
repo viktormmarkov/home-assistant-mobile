@@ -11,7 +11,7 @@ export function ListFooter(props) {
         alignItems: "center",
       }}
       leftIcon={{
-        name: props.iconName,
+        name: props.iconName || 'plus',
         type: props.iconType || 'antdesign',
         size: 17,
         color: primaryColor
