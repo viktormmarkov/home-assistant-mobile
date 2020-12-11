@@ -12,7 +12,7 @@ import { saveShoppingItem } from "../actions/shoppingLists";
 import { InlineListInput } from "../components/InlineListInput";
 import { FormInput } from "../components/FormInput";
 import { ListHeader } from "../components/ListHeader";
-import { primaryColor } from "../styles/colors";
+import { ListFooter } from "../components/ListFooter";
 
 export class ShoppingListScreen extends React.Component<Props, State> {
   static navigationOptions = (options) => {
@@ -130,19 +130,13 @@ export class ShoppingListScreen extends React.Component<Props, State> {
           {this.getUsers()}
 
           {!inviteUser && (
-            <ListItem
-              key={"add"}
-              title={"Invite a friend"}
-              titleStyle={{ color: primaryColor }}
-              leftIcon={{ name: "add", size: 17, color: primaryColor }}
-              containerStyle={{
-                borderBottomLeftRadius: 16,
-                borderBottomRightRadius: 16,
-              }}
-              onPress={() => {
-                this.setState({ inviteUser: true });
-              }}
-            />
+            <ListFooter
+             title={"Invite a friend"}
+             iconName="plus"
+             onPress={() => {
+              this.setState({ inviteUser: true });
+            }}
+           />
           )}
           {inviteUser && (
             <InlineListInput

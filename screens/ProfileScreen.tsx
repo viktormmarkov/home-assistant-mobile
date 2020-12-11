@@ -13,6 +13,8 @@ import { ScrollView } from "react-native-gesture-handler";
 import { InlineListInput } from "../components/InlineListInput";
 import { ListHeader } from "../components/ListHeader";
 import userService from "../services/userService";
+import { ListFooter } from "../components/ListFooter";
+
 class ProfileScreen extends React.Component<Props, State> {
   static navigationOptions = () => {
     return {
@@ -129,17 +131,10 @@ class ProfileScreen extends React.Component<Props, State> {
           />
           {this.getShoppingLists()}
           {!addShoppingList ? (
-            <ListItem
-              key={"add"}
+            <ListFooter
               title={translate("Add Shopping List")}
-              leftIcon={{ name: "add" }}
-              containerStyle={{
-                borderBottomLeftRadius: 8,
-                borderBottomRightRadius: 8,
-              }}
-              onPress={() => {
-                this.setState({ addShoppingList: true });
-              }}
+              iconName="plus"
+              onPress={() => {this.setState({ addShoppingList: true });}}
             />
           ) : null}
           {addShoppingList ? (
