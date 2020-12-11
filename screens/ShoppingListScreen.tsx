@@ -1,29 +1,30 @@
 import React from "react";
-import _ from 'lodash';
-import { AsyncStorage, ScrollView, View, Animated, Easing} from "react-native";
-import { Input, Button, Text } from 'react-native-elements';
-import shoppingListService from '../services/shoppingListService';
-import styles from '../styles/base';
-import { ListItem } from 'react-native-elements';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { changeUser } from '../actions/appStore';
-import { saveShoppingItem } from '../actions/shoppingLists';
-import { TouchableOpacity } from "react-native-gesture-handler";
+import _ from "lodash";
+import { AsyncStorage, ScrollView, View } from "react-native";
+import { Button, Text } from "react-native-elements";
+import shoppingListService from "../services/shoppingListService";
+import styles from "../styles/base";
+import { ListItem } from "react-native-elements";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { changeUser } from "../actions/appStore";
+import { saveShoppingItem } from "../actions/shoppingLists";
+import { InlineListInput } from "../components/InlineListInput";
+import { FormInput } from "../components/FormInput";
+import { ListHeader } from "../components/ListHeader";
+import { primaryColor } from "../styles/colors";
 
 export class ShoppingListScreen extends React.Component<Props, State> {
-
   static navigationOptions = (options) => {
-    const { navigation } = options
+    const { navigation } = options;
+    const { params } = navigation.state;
     return {
       headerStyle: {
-        backgroundColor: '#5CA666',
+        backgroundColor: "#5CA666",
       },
-      headerLeft: navigation.state.params && navigation.state.params.headerLeft,
-      headerRight: navigation.state.params && navigation.state.params.headerRight,
-      headerTintColor: '#fff',
-    }
-  }
+      headerTintColor: "#fff",
+    };
+  };
 
   state: State;
   constructor(props) {
@@ -37,7 +38,6 @@ export class ShoppingListScreen extends React.Component<Props, State> {
       email: "",
       users: [],
       inviteUser: false,
-      inputContainerStyle: { borderBottomWidth: 0}
     };
   }
 
@@ -49,160 +49,140 @@ export class ShoppingListScreen extends React.Component<Props, State> {
 
   setHeader = () => {
     this.props.navigation.setParams({
-      headerRight: (<TouchableOpacity onPress={this.save}><Text style={{
-          color: 'white',
-          padding: 5 }}>
-            Update
-          </Text>
-        </TouchableOpacity>),
-      headerLeft: (<TouchableOpacity onPress={() => {
-        this.props.navigation.pop();
-      }}><Text style={{ 
-        color: 'white',
-         padding: 5}}>
-        Back
-        </Text>
-      </TouchableOpacity>)
+      headerTitle: this.state.name,
     });
-  }
+  };
 
   getUser = async () => {
-    const {user, actions} = this.props;
-    const userSaved = await AsyncStorage.getItem('user');
+    const { user, actions } = this.props;
+    const userSaved = await AsyncStorage.getItem("user");
     if (userSaved && !user) {
       actions.changeUser(userSaved);
     }
-  }
+  };
 
   loadUsers = () => {
-    const {_id} = this.state;
-    shoppingListService.getUsers(_id).then(async users => {
-      this.setState({users});
-    })
-  }
+    const { _id } = this.state;
+    shoppingListService.getUsers(_id).then(async (users) => {
+      this.setState({ users });
+    });
+  };
 
   save = () => {
-    const {actions} = this.props;
-    const {_id, name} = this.state;
-    shoppingListService.updateItem(_id, {name}).then(res => {
+    const { actions } = this.props;
+    const { _id, name } = this.state;
+    shoppingListService.updateItem(_id, { name }).then((res) => {
       actions.saveShoppingItem(res.data);
     });
-  }
+  };
 
   invite = () => {
-    const {_id, email} = this.state;
+    const { _id, email } = this.state;
     shoppingListService.inviteUser(_id, email);
-  }
+  };
 
   cancel = () => {
-    this.setState({inviteUser: false, email: null});
-  }
+    this.setState({ inviteUser: false, email: null });
+  };
 
   getUsers = () => {
-    const {users} = this.state; 
-    const {user: currentUser} = this.props;
-    return users.map((p: any, i) => (<ListItem
+    const { users } = this.state;
+    const { user: currentUser } = this.props;
+    return users.map((p: any, i) => (
+      <ListItem
         key={i}
-        title={p.name}
+        title={`${p.name}`}
+        rightElement={() => {
+          return (p._id === currentUser ? 
+            <Text style={styles.labelStyle}>That's you</Text>
+           : null);
+        }}
         bottomDivider
-        rightIcon={{name: p._id === currentUser ? 'stars' : null}}
-      />))
-  }
+      />
+    ));
+  };
 
   render() {
-    const safeAreaStyle = {...styles.container, ...styles.column}
-    const {shoppingList, inviteUser} = this.state;
+    const { shoppingList, inviteUser } = this.state;
     return (
-      <View style={safeAreaStyle}>  
-        <View style={styles.cardHeader}>
-          <View style={{flex: 0.9}}>
-
-          </View>
-          <Input
-            inputStyle={{color: 'white', fontSize: 30}}
-            inputContainerStyle={this.state.inputContainerStyle}
-            style={{ height: 90 }}
-            onChangeText={name => this.setState({ name })}
+      <View style={styles.columnContainer}>
+        <View style={{ flexDirection: "column", padding: 15 }}>
+          <FormInput
+            onChangeText={(name) => this.setState({ name })}
             value={this.state.name}
-            autoCapitalize='none'
+            autoCapitalize="none"
+            label="Name"
+            iconName="form"
           />
-          <Text style={{color: 'white', padding: 10}}>
-            Last updated on {new Date(shoppingList.updatedAt).toDateString()}
-          </Text>
-        </View>
-        <View style={styles.cardBody}>
-          <ListItem 
-                key={'members'}
-                title={'Members'}
-                bottomDivider
+          <Button
+            style={{ alignSelf: "flex-end", marginVertical: 10 }}
+            title={"Update"}
+            onPress={() => this.save}
           />
-          <ScrollView style={{padding: 10}}>
-            {!inviteUser && <ListItem 
-                key={'add'}
-                title={'Invite a friend'}
-                bottomDivider
-                leftIcon={{name: 'add'}}
-                onPress={() => {
-                  this.setState({inviteUser: true})
-                }} />}
-            {inviteUser && <View style={{backgroundColor: 'white'}}>
-             <Input
-                style={{ height: 40 }}
-                onChangeText={email => this.setState({ email })}
-                value={this.state.email}
-                label="Enter email to share with"
-                autoCompleteType='email'
-                keyboardType='email-address'
-                autoCapitalize='none'
-              />
-              <View style={{ 
-                flexDirection: 'row',
-                flex: 1,
-              }}>
-                <Button
-                  title="Cancel"
-                  type="clear"
-                  containerStyle={{flex: 1,  flexGrow: 1,}}
-                  onPress={this.cancel}
-                />
-                <Button
-                  title="Add"
-                  type="clear"
-                  containerStyle={{flex: 1,  flexGrow: 1,}}
-                  onPress={this.invite}
-                />
-              </View>
-            </View>}
-            {!inviteUser && this.getUsers()}
-          </ScrollView>
         </View>
+        <ScrollView style={{ paddingHorizontal: 15 }}>
+          <ListHeader
+            key={"members"}
+            title={"Members"}
+            iconType={"feather"}
+            iconName={"users"}
+          />
+          {this.getUsers()}
+
+          {!inviteUser && (
+            <ListItem
+              key={"add"}
+              title={"Invite a friend"}
+              titleStyle={{ color: primaryColor }}
+              leftIcon={{ name: "add", size: 17, color: primaryColor }}
+              containerStyle={{
+                borderBottomLeftRadius: 16,
+                borderBottomRightRadius: 16,
+              }}
+              onPress={() => {
+                this.setState({ inviteUser: true });
+              }}
+            />
+          )}
+          {inviteUser && (
+            <InlineListInput
+              label="Enter email to share with"
+              onChangeText={(email) => this.setState({ email })}
+              autoCompleteType="email"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              value={this.state.email}
+              cancel={this.cancel}
+              confirm={this.invite}
+            />
+          )}
+        </ScrollView>
       </View>
     );
   }
 }
-interface State { 
-  name: string,
-  inputContainerStyle: any,
-  errorMessage: string, 
-  _id: string, 
-  users: [], 
-  email: string, 
-  shoppingList: any,
-  inviteUser: boolean
+interface State {
+  name: string;
+  errorMessage: string;
+  _id: string;
+  users: [];
+  email: string;
+  shoppingList: any;
+  inviteUser: boolean;
 }
 
 interface Props {
-  navigation: any,
-  actions: any,
-  user: string
+  navigation: any;
+  actions: any;
+  user: string;
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   user: state.app.user,
 });
 
-const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators({changeUser, saveShoppingItem}, dispatch),
+const mapDispatchToProps = (dispatch) => ({
+  actions: bindActionCreators({ changeUser, saveShoppingItem }, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ShoppingListScreen);

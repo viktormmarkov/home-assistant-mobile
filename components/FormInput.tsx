@@ -14,7 +14,7 @@ export class FormInput extends React.Component {
         }}
       >
         <View style={{ alignItems: "center", justifyContent: 'flex-start', marginLeft: 5, marginRight: 15}}>
-          <Icon name={this.props.iconName} type={"antdesign"} />
+          <Icon name={this.props.iconName} type={this.props.iconType || "antdesign"} />
         </View>
 
         <Input
