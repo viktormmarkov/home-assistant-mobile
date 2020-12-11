@@ -17,7 +17,6 @@ export function ListFooter(props) {
         color: primaryColor
       }}
       titleStyle={{ color: primaryColor }}
-      bottomDivider
       {...props}
     />
   );
