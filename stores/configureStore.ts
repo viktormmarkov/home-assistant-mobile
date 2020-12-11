@@ -8,6 +8,8 @@ import { ofType, combineEpics, createEpicMiddleware } from 'redux-observable';
 import { map, flatMap, mergeMap } from 'rxjs/operators';
 import shoppingListService from '../services/shoppingListService';
 import { from } from 'rxjs';
+import userProfileReducer from '../reducers/userProfileStore';
+
 
 const rootReducer = combineReducers(
     { 
@@ -15,7 +17,8 @@ const rootReducer = combineReducers(
         app: appStoreReducer,
         shoppingLists: shoppingListReducer,
         promotions: promotionsReducer,
-        shoppingListItems: shoppingListItemsReducer
+        shoppingListItems: shoppingListItemsReducer,
+        userProfile: userProfileReducer
     }
 );
 const epicMiddleware = createEpicMiddleware();

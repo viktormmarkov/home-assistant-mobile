@@ -1,5 +1,5 @@
 import { StyleSheet, Platform} from 'react-native';
-import { primaryColor } from './colors';
+import { primaryColor, labelColor} from './colors';
 import Constants from 'expo-constants';
 const statusBarHeight = Constants.statusBarHeight
 
@@ -9,6 +9,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#F2F2F2',
     },
     column: {
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+    },
+    columnContainer: {
+        flex: 1,
+        backgroundColor: '#F2F2F2',
         flexDirection: 'column',
         justifyContent: 'flex-start',
     },
@@ -75,6 +81,10 @@ const styles = StyleSheet.create({
         color: 'white',
         padding: 10,
     },
+    labelStyle: {
+        color: labelColor,
+        fontWeight: '200'
+    }
 });
 
 export default styles;

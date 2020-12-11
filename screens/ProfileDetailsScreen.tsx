@@ -1,27 +1,25 @@
 import React from "react";
-import _ from 'lodash';
-import { AsyncStorage, ScrollView, View, Animated, Easing} from "react-native";
-import { Input, Button, Text } from 'react-native-elements';
-import userService from '../services/userService';
-import styles from '../styles/base';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { changeUser } from '../actions/appStore';
-import { TouchableOpacity } from "react-native-gesture-handler";
-
+import _ from "lodash";
+import { AsyncStorage, View } from "react-native";
+import { Avatar, Button } from "react-native-elements";
+import userService from "../services/userService";
+import styles from "../styles/base";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { FormInput } from "../components/FormInput";
 export class ProfileDetailsScreen extends React.Component<Props, State> {
-
   static navigationOptions = (options) => {
-    const { navigation } = options
+    const { navigation } = options;
+    const { params } = navigation.state;
     return {
       headerStyle: {
-        backgroundColor: '#5CA666',
+        backgroundColor: "#5CA666",
       },
-      headerLeft: navigation.state.params && navigation.state.params.headerLeft,
-      headerRight: navigation.state.params && navigation.state.params.headerRight,
-      headerTintColor: '#fff',
-    }
-  }
+      headerLeft: params && params.headerLeft,
+      headerTintColor: "#fff",
+      headerTitle: ''
+    };
+  };
 
   state: State;
   constructor(props) {
@@ -33,92 +31,108 @@ export class ProfileDetailsScreen extends React.Component<Props, State> {
     };
   }
 
-  componentDidMount = async () => {
-    this.setHeader();
-    // await this.getUser();
+  componentDidMount() {
     this.getUserDetails();
   }
 
-  setHeader = () => {
-    this.props.navigation.setParams({
-      headerRight: (<TouchableOpacity onPress={this.save}><Text style={{
-          color: 'white',
-          padding: 5 }}>
-            Update
-          </Text>
-        </TouchableOpacity>),
-      headerLeft: (<TouchableOpacity onPress={() => {
-        this.props.navigation.pop();
-      }}><Text style={{ 
-        color: 'white',
-         padding: 5}}>
-        Back
-        </Text>
-      </TouchableOpacity>)
+  getUserDetails = () => {
+    const { actions } = this.props;
+    userService.getProfile().then((data) => {
+      this.setState({ user: data });
+      actions.loadProfile(data);
     });
-  }
-
-  getUserDetails = async () => {
-    const {user} = this.props;
-    const userSaved = await AsyncStorage.getItem('user');
-    userService.getItem(user || userSaved).then((res) => {
-      this.setState({user: res});
-    });
-  }
+  };
 
   save = async () => {
-    const {user: userId} = this.props;
-    const {user} = this.state;
-    const userSaved = await AsyncStorage.getItem('user');
-    userService.updateItem(userId || userSaved, user);
-  }
+    const { user: userId, actions } = this.props;
+    const { user } = this.state;
+    const userSaved = await AsyncStorage.getItem("user");
+    userService.updateItem(userId || userSaved, user).then(actions.loadProfile);
+  };
 
   render() {
-    const safeAreaStyle = {...styles.container, ...styles.column}
+    const { profile } = this.props;
+    const { user } = this.state;
+
+    if (!profile) {
+      return null;
+    }
     return (
-      <View style={safeAreaStyle}>  
-        <Input
-          style={{ height: 40 }}
-          label="Name"
-          autoCompleteType='name'
-          placeholder="email@address.com"
-          onChangeText={name => this.setState({ user: {...this.state.user, name} })}
-          value={this.state.user.name}
-        />
-        <Input
-          style={{ height: 40 }}
-          placeholder="Last Name"
-          label="Last Name"
-          autoCompleteType='name'
-          onChangeText={name => this.setState({ user: {...this.state.user, lastName: name} })}
-          value={this.state.user.lastName}
-        />
-        <View style={styles.cardBody}>
-          <ScrollView style={{padding: 10}}>
-          </ScrollView>
+      <View style={styles.columnContainer}>
+        <View
+          style={{ alignItems: "center", paddingBottom: 15, paddingTop: 20 }}
+        >
+          <Avatar
+            size="xlarge"
+            containerStyle={{ borderColor: "white", borderWidth: 4 }}
+            rounded
+            source={{
+              uri:
+                "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg",
+            }}
+          />
         </View>
-       </View>
+        <View
+          style={{
+            paddingHorizontal: 15,
+            paddingVertical: 10,
+            flex: 1,
+          }}
+        >
+          <FormInput
+            label="Name"
+            autoCompleteType="name"
+            onChangeText={(name) =>
+              this.setState({ user: { ...this.state.user, name } })
+            }
+            iconName={"user"}
+            value={user.name}
+          />
+          <FormInput
+            label="Email"
+            autoCompleteType="email"
+            onChangeText={(name) =>
+              this.setState({ user: { ...this.state.user, lastName: name } })
+            }
+            iconName={"mail"}
+            value={user.email}
+          />
+          <Button
+            style={{ alignSelf: "flex-end", marginVertical: 5 }}
+            title={"Save"}
+            onPress={() => this.save}
+          />
+        </View>
+      </View>
     );
   }
 }
-interface State { 
-  errorMessage: string, 
-  user: {},
-  email: string, 
+interface State {
+  errorMessage: string;
+  user: any;
+  email: string;
 }
 
 interface Props {
-  navigation: any,
-  actions: any,
-  user: string
+  navigation: any;
+  actions: any;
+  user: string;
+  profile: any;
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   user: state.app.user,
+  profile: state.userProfile,
 });
 
-const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators({changeUser}, dispatch),
+const mapDispatchToProps = (dispatch) => ({
+  actions: bindActionCreators(
+    { loadProfile: (data) => ({ type: "PROFILE_LOADED", payload: data }) },
+    dispatch
+  ),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProfileDetailsScreen);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ProfileDetailsScreen);

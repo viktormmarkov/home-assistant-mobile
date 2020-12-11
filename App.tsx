@@ -9,6 +9,7 @@ import HomeScreen from "./screens/HomeScreen";
 import PromotionsScreen from "./screens/PromotionsScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import LoginScreen from "./screens/LoginScreen";
+import RegisterScreen from "./screens/RegisterScreen";
 import ShoppingListScreen from "./screens/ShoppingListScreen";
 import AuthLoadingScreen from "./screens/AuthLoadingScreen";
 import { Provider } from 'react-redux';
@@ -19,7 +20,7 @@ import styles from './styles/base';
 
 import store from './stores/configureStore';
 import apiBase from "./services/apiBase";
-import { ProfileDetailsScreen } from "./screens/ProfileDetailsScreen";
+import ProfileDetailsScreen from "./screens/ProfileDetailsScreen";
 
 const HIDDEN_HEADER_OPTIONS = {
   headerMode: 'none',
@@ -28,7 +29,7 @@ const HIDDEN_HEADER_OPTIONS = {
   }
 };
 
-const AuthStack = createStackNavigator({ LoginScreen: LoginScreen }, {...HIDDEN_HEADER_OPTIONS});
+const AuthStack = createStackNavigator({ LoginScreen, RegisterScreen }, {...HIDDEN_HEADER_OPTIONS});
 const ProfileStack = createStackNavigator({ Profile: ProfileScreen, ProfileDetails: ProfileDetailsScreen, ShoppingList: ShoppingListScreen});
 
 const defaultTabBarOptions = {
