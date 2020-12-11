@@ -9,10 +9,9 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { changeUser } from "../actions/appStore";
 import { saveShoppingItem } from "../actions/shoppingLists";
-import { InlineListInput } from "../components/InlineListInput";
 import { FormInput } from "../components/FormInput";
 import { ListHeader } from "../components/ListHeader";
-import { ListFooter } from "../components/ListFooter";
+import { AddListItem } from "../components/AddListitem";
 
 export class ShoppingListScreen extends React.Component<Props, State> {
   static navigationOptions = (options) => {
@@ -34,10 +33,7 @@ export class ShoppingListScreen extends React.Component<Props, State> {
       _id: params._id,
       name: params.name,
       shoppingList: params,
-      errorMessage: "",
-      email: "",
       users: [],
-      inviteUser: false,
     };
   }
 
@@ -76,13 +72,9 @@ export class ShoppingListScreen extends React.Component<Props, State> {
     });
   };
 
-  invite = () => {
-    const { _id, email } = this.state;
-    shoppingListService.inviteUser(_id, email);
-  };
-
-  cancel = () => {
-    this.setState({ inviteUser: false, email: null });
+  invite = (email) => {
+    const { _id } = this.state;
+    return shoppingListService.inviteUser(_id, email);
   };
 
   getUsers = () => {
@@ -103,7 +95,6 @@ export class ShoppingListScreen extends React.Component<Props, State> {
   };
 
   render() {
-    const { shoppingList, inviteUser } = this.state;
     return (
       <View style={styles.columnContainer}>
         <View style={{ flexDirection: "column", padding: 15 }}>
@@ -128,28 +119,11 @@ export class ShoppingListScreen extends React.Component<Props, State> {
             iconName={"users"}
           />
           {this.getUsers()}
-
-          {!inviteUser && (
-            <ListFooter
-             title={"Invite a friend"}
-             iconName="plus"
-             onPress={() => {
-              this.setState({ inviteUser: true });
-            }}
-           />
-          )}
-          {inviteUser && (
-            <InlineListInput
-              label="Enter email to share with"
-              onChangeText={(email) => this.setState({ email })}
-              autoCompleteType="email"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              value={this.state.email}
-              cancel={this.cancel}
-              confirm={this.invite}
-            />
-          )}
+          <AddListItem
+            addTitle="Invite a friend"
+            add={this.invite}
+            newItemLabel="Enter user email"
+          />
         </ScrollView>
       </View>
     );
@@ -157,12 +131,9 @@ export class ShoppingListScreen extends React.Component<Props, State> {
 }
 interface State {
   name: string;
-  errorMessage: string;
   _id: string;
   users: [];
-  email: string;
   shoppingList: any;
-  inviteUser: boolean;
 }
 
 interface Props {

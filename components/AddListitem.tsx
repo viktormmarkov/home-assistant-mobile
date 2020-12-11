@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ListFooter } from "./ListFooter";
 import { InlineListInput } from "./InlineListInput";
+import PropTypes from 'prop-types';
 
 export function AddListItem(props) {
   const [addItem, setAddItem] = useState(false);
@@ -32,4 +33,10 @@ export function AddListItem(props) {
       ></InlineListInput>
     );
   }
+}
+
+AddListItem.propTypes = {
+  newItemLabel: PropTypes.string,
+  addTitle: PropTypes.string,
+  add: PropTypes.func
 }
