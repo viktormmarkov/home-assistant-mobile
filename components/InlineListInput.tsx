@@ -1,6 +1,7 @@
 import React from "react";
 import { Input, Button } from "react-native-elements";
 import { View } from "react-native";
+import styles from '../styles/base';
 
 export class InlineListInput extends React.Component {
   render() {
@@ -12,7 +13,7 @@ export class InlineListInput extends React.Component {
             paddingVertical: 14,
             paddingHorizontal: 14,
           }}
-          labelStyle={{ fontWeight: "200", color: "#010101", paddingBottom: 5 }}
+          labelStyle={{ ...styles.labelStyle, paddingBottom: 5 }}
           {...this.props}
         />
         <View
