@@ -97,13 +97,11 @@ export class ProfileDetailsScreen extends React.Component<Props, State> {
             iconName={"mail"}
             value={user.email}
           />
-          <View style={{ flexDirection: "column", flex: 1 }}>
-            <Button
-              style={{ alignSelf: "flex-end", marginVertical: 5 }}
-              title={"Save"}
-              onPress={() => this.save}
-            />
-          </View>
+          <Button
+            style={{ alignSelf: "flex-end", marginVertical: 5 }}
+            title={"Save"}
+            onPress={() => this.save}
+          />
         </View>
       </View>
     );
