@@ -1,5 +1,5 @@
 import { StyleSheet, Platform} from 'react-native';
-import { primaryColor } from './colors';
+import { primaryColor, labelColor} from './colors';
 import Constants from 'expo-constants';
 const statusBarHeight = Constants.statusBarHeight
 
@@ -81,6 +81,10 @@ const styles = StyleSheet.create({
         color: 'white',
         padding: 10,
     },
+    labelStyle: {
+        color: labelColor,
+        fontWeight: '200'
+    }
 });
 
 export default styles;

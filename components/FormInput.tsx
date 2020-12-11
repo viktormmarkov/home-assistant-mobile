@@ -1,6 +1,7 @@
 import React from "react";
 import { Input, Icon } from "react-native-elements";
 import { View } from "react-native";
+import styles from '../styles/base';
 
 export class FormInput extends React.Component {
   render() {
@@ -17,9 +18,7 @@ export class FormInput extends React.Component {
         </View>
 
         <Input
-          labelStyle={{
-            fontWeight: "200", color: "#010101",
-          }}
+          labelStyle={styles.labelStyle}
           inputContainerStyle={{
             borderBottomWidth: 0,
           }}
