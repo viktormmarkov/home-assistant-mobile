@@ -11,6 +11,7 @@ import { bindActionCreators } from "redux";
 import { translate } from "../l10n/translate";
 import { ScrollView } from "react-native-gesture-handler";
 import { InlineListInput } from "../components/InlineListInput";
+import { ListHeader } from "../components/ListHeader";
 import userService from "../services/userService";
 class ProfileScreen extends React.Component<Props, State> {
   static navigationOptions = () => {
@@ -37,14 +38,14 @@ class ProfileScreen extends React.Component<Props, State> {
     shoppingListService.query().then((data) => {
       actions.loadShoppingItems(data);
     });
-  }
+  };
 
   fetchUserData = () => {
-    const {actions} = this.props;
-    userService.getProfile().then(data => {
+    const { actions } = this.props;
+    userService.getProfile().then((data) => {
       actions.loadProfile(data);
     });
-  }
+  };
 
   componentDidMount() {
     this.fetchShoppinglists();
@@ -100,7 +101,7 @@ class ProfileScreen extends React.Component<Props, State> {
             justifyContent: "space-between",
           }}
         >
-          <Text style={{ fontSize: 24 }}>Hello, {profile && profile.name }</Text>
+          <Text style={{ fontSize: 24 }}>Hello, {profile && profile.name}</Text>
           <Button
             type="outline"
             title={translate("Edit Details")}
@@ -119,19 +120,23 @@ class ProfileScreen extends React.Component<Props, State> {
           />
         </View>
 
-        <ListItem
-          key={"shopping-list-head"}
-          title={translate("Shopping Lists")}
-          bottomDivider
-        />
         <View style={{ padding: 15, flex: 1 }}>
+          <ListHeader
+            key={"shopping-list-head"}
+            title={translate("Shopping Lists")}
+            iconType={"entypo"}
+            iconName={"list"}
+          />
           {this.getShoppingLists()}
           {!addShoppingList ? (
             <ListItem
               key={"add"}
               title={translate("Add Shopping List")}
-              bottomDivider
               leftIcon={{ name: "add" }}
+              containerStyle={{
+                borderBottomLeftRadius: 8,
+                borderBottomRightRadius: 8,
+              }}
               onPress={() => {
                 this.setState({ addShoppingList: true });
               }}
@@ -162,19 +167,23 @@ interface Props {
   actions: any;
   navigation: any;
   shoppingLists: Array<any>;
-  profile: any
+  profile: any;
 }
 
 const mapStateToProps = (state) => ({
   products: state.products.items,
   shoppingListId: state.app.shoppingList._id,
   shoppingLists: state.shoppingLists.items,
-  profile: state.userProfile
+  profile: state.userProfile,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators(
-    { changeShoppingList, loadShoppingItems, loadProfile: (data) => ({type: 'PROFILE_LOADED', payload: data})},
+    {
+      changeShoppingList,
+      loadShoppingItems,
+      loadProfile: (data) => ({ type: "PROFILE_LOADED", payload: data }),
+    },
     dispatch
   ),
 });
