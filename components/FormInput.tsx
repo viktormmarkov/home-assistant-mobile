@@ -12,7 +12,7 @@ export class FormInput extends React.Component {
           justifyContent: "space-between",
         }}
       >
-        <View style={{ alignItems: "center", justifyContent: 'flex-start', marginLeft: 15, marginRight: 20}}>
+        <View style={{ alignItems: "center", justifyContent: 'flex-start', marginLeft: 5, marginRight: 15}}>
           <Icon name={this.props.iconName} type={"antdesign"} />
         </View>
 

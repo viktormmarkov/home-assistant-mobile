@@ -74,7 +74,7 @@ export class ProfileDetailsScreen extends React.Component<Props, State> {
         </View>
         <View
           style={{
-            paddingHorizontal: 10,
+            paddingHorizontal: 15,
             paddingVertical: 10,
             flex: 1,
           }}
