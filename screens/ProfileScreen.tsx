@@ -53,7 +53,10 @@ class ProfileScreen extends React.Component<Props, State> {
         key={i}
         title={`${p.name}`}
         bottomDivider
-        rightIcon={{ name: p._id === shoppingListId ? "stars" : null, color: primaryColor}}
+        rightIcon={{
+          name: p._id === shoppingListId ? "stars" : null,
+          color: primaryColor,
+        }}
         onPress={() => {
           navigate("ShoppingList", p);
         }}
@@ -69,7 +72,7 @@ class ProfileScreen extends React.Component<Props, State> {
   add = (newListName) => {
     return shoppingListService
       .addItem({ name: newListName })
-      .then(this.fetchShoppinglists)
+      .then(this.fetchShoppinglists);
   };
 
   render() {
@@ -95,13 +98,11 @@ class ProfileScreen extends React.Component<Props, State> {
         </View>
         <View style={{ alignItems: "center", paddingBottom: 15 }}>
           <Avatar
+            title={profile && profile.name && profile.name[0]}
             size="xlarge"
             containerStyle={{ borderColor: "white", borderWidth: 4 }}
             rounded
-            source={{
-              uri:
-                "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg",
-            }}
+            source={{ uri: profile.profilePicture }}
           />
         </View>
 
@@ -117,16 +118,14 @@ class ProfileScreen extends React.Component<Props, State> {
             addTitle={translate("Add Shopping List")}
             newItemLabel="Shopping List Name"
             add={this.add}
-          >
-          </AddListItem>
+          ></AddListItem>
         </View>
       </ScrollView>
     );
   }
 }
 
-interface State {
-}
+interface State {}
 
 interface Props {
   shoppingListId: string;

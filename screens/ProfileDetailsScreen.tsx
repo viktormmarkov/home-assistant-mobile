@@ -44,10 +44,9 @@ export class ProfileDetailsScreen extends React.Component<Props, State> {
   };
 
   save = async () => {
-    const { user: userId, actions } = this.props;
+    const { actions } = this.props;
     const { user } = this.state;
-    const userSaved = await AsyncStorage.getItem("user");
-    userService.updateItem(userId || userSaved, user).then(actions.loadProfile);
+    userService.saveProfile(user).then(actions.loadProfile);
   };
 
   render() {
@@ -63,13 +62,11 @@ export class ProfileDetailsScreen extends React.Component<Props, State> {
           style={{ alignItems: "center", paddingBottom: 15, paddingTop: 20 }}
         >
           <Avatar
+            title={user && user.name && user.name[0]}
             size="xlarge"
             containerStyle={{ borderColor: "white", borderWidth: 4 }}
             rounded
-            source={{
-              uri:
-                "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg",
-            }}
+            source={{uri: user.profilePicture}}
           />
         </View>
         <View
@@ -88,7 +85,7 @@ export class ProfileDetailsScreen extends React.Component<Props, State> {
             iconName={"user"}
             value={user.name}
           />
-          <FormInput
+          {/* <FormInput
             label="Email"
             autoCompleteType="email"
             onChangeText={(name) =>
@@ -96,11 +93,11 @@ export class ProfileDetailsScreen extends React.Component<Props, State> {
             }
             iconName={"mail"}
             value={user.email}
-          />
+          /> */}
           <Button
             style={{ alignSelf: "flex-end", marginVertical: 5 }}
             title={"Save"}
-            onPress={() => this.save}
+            onPress={this.save}
           />
         </View>
       </View>
