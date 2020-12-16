@@ -1,12 +1,16 @@
 import React from "react";
 import _ from "lodash";
-import { AsyncStorage, View } from "react-native";
+import { View } from "react-native";
 import { Avatar, Button } from "react-native-elements";
 import userService from "../services/userService";
 import styles from "../styles/base";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { FormInput } from "../components/FormInput";
+import * as ImagePicker from 'expo-image-picker';
+import Constants from 'expo-constants';
+import * as Permissions from 'expo-permissions';
+
 export class ProfileDetailsScreen extends React.Component<Props, State> {
   static navigationOptions = (options) => {
     const { navigation } = options;
@@ -28,8 +32,35 @@ export class ProfileDetailsScreen extends React.Component<Props, State> {
       errorMessage: "",
       email: "",
       user: {},
+      image: {}
     };
   }
+
+  getPermissionAsync = async () => {
+    if (Constants.platform.ios) {
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!');
+      }
+    }
+  };
+
+  _pickImage = async () => {
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+      if (!result.cancelled) {
+        return userService.saveProfilePicture(result).then(this.props.actions.loadProfile);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
 
   componentDidMount() {
     this.getUserDetails();
@@ -67,7 +98,12 @@ export class ProfileDetailsScreen extends React.Component<Props, State> {
             containerStyle={{ borderColor: "white", borderWidth: 4 }}
             rounded
             source={{uri: user.profilePicture}}
-          />
+            showEditButton
+            editButton={{
+              onPress:this._pickImage
+            }}
+          >
+          </Avatar>
         </View>
         <View
           style={{
@@ -108,6 +144,7 @@ interface State {
   errorMessage: string;
   user: any;
   email: string;
+  image: any
 }
 
 interface Props {
