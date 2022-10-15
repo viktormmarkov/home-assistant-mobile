@@ -3,7 +3,6 @@
     "name": "home-assistant-mobile",
     "slug": "home-assistant-mobile",
     "privacy": "public",
-    "sdkVersion": "36.0.0",
     "platforms": [
       "ios",
       "android",
@@ -23,7 +22,7 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "ios": { 
+    "ios": {
       "supportsTablet": true
     },
     "android": {
