@@ -59,7 +59,7 @@ export class Register extends React.Component<Props, State>{
 
   login = () => {
     const {navigate} = this.props.navigation;
-    navigate("LoginScreen");
+    navigate("Login");
   }
 
   render() {

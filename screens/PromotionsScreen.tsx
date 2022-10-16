@@ -10,7 +10,7 @@ import shoppingListService from '../services/shoppingListService';
 import shopService from '../services/shopService';
 import ItemsGroup from '../components/ItemsGroup';
 import styles from '../styles/base';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+// import { TouchableOpacity } from 'react-native-gesture-handler';
 
 function formatCurrency(number) {
   return `${number.toFixed(2)} лв`;
@@ -100,13 +100,13 @@ class PromotionsScreen extends React.Component<Props, State>{
                 const additionalStyle = styles[section.key];
                 const shop = shops && shops[item && item.shop];
                 return (
-                  <TouchableOpacity onPress={() => config.tilePress(item, section, index)}>
+                  // <TouchableOpacity onPress={() => config.tilePress(item, section, index)}>
                     <View style={{...styles.squareContainer, ...additionalStyle}} key={item._id}>
                         <Text style={[styles.itemName]}>{item.name}</Text>
                         <Text style={[styles.itemName]}>{item.price && formatCurrency(item.price)}</Text>
                         <Text style={[styles.itemName]}>{shop && shop.name}</Text>
                     </View>
-                  </TouchableOpacity>
+                  // </TouchableOpacity>
                 )
               }}
               config={{
