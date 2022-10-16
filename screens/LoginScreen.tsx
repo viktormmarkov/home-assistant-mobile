@@ -1,6 +1,7 @@
 import React from "react";
-import { StyleSheet, View, AsyncStorage, Text } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import { Input, Button } from 'react-native-elements';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { changeShoppingList, changeUser } from '../actions/appStore';
@@ -24,7 +25,9 @@ export class Login extends React.Component<Props, State>{
     const {email, password} = this.state;
     const {actions} = this.props;
     const {navigate} = this.props.navigation;
+    console.log(this.props.navigation)
     const credentials = {email, password};
+    try {
     authenticationService.login(credentials)
       .then(async (res) => {
         const data = res && res.data;
@@ -41,7 +44,7 @@ export class Login extends React.Component<Props, State>{
             actions.changeShoppingList(shoppingListId);
           }
    
-          navigate('AuthLoading')
+          navigate("AuthLoading")
         } else {
           this.setState({
             errorMessage: 'Something went wrong'
@@ -49,15 +52,19 @@ export class Login extends React.Component<Props, State>{
         }
       }) 
       .catch(err => {
+        console.log(err.response);
         this.setState({
-          errorMessage: err.response || 'Something went wrong'
+          errorMessage: JSON.stringify(err.response) || 'Something went wrong'
         });
       }) 
+    } catch(err) {
+      console.log(err);
+    }
   }
 
   register = () => {
     const {navigate} = this.props.navigation;
-    navigate("RegisterScreen");
+    navigate("Register");
   }
 
   render() {

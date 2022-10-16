@@ -36,7 +36,7 @@ export default class ItemsGroup extends React.Component {
         style={styles.gridView}
         itemDimension={100}
         sections={items}
-        items={items}
+        data={items}
         renderItem={(options) => {
           if (this.props.renderItem) {
             return this.props.renderItem(config, options);

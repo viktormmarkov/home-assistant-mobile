@@ -9,7 +9,6 @@ import { bindActionCreators } from "redux";
 import { FormInput } from "../components/FormInput";
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
-import * as Permissions from 'expo-permissions';
 
 export class ProfileDetailsScreen extends React.Component<Props, State> {
   static navigationOptions = (options) => {
@@ -38,7 +37,8 @@ export class ProfileDetailsScreen extends React.Component<Props, State> {
 
   getPermissionAsync = async () => {
     if (Constants.platform.ios) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      const status = 'not-granted';
+      // const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
       if (status !== 'granted') {
         alert('Sorry, we need camera roll permissions to make this work!');
       }
